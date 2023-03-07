@@ -1,5 +1,11 @@
 <?php
 
+use Backpack\CRUD\app\Http\Controllers\AdminController;
+use Backpack\CRUD\app\Http\Controllers\Auth\ForgotPasswordController;
+use Backpack\CRUD\app\Http\Controllers\Auth\LoginController;
+use Backpack\CRUD\app\Http\Controllers\Auth\RegisterController;
+use Backpack\CRUD\app\Http\Controllers\Auth\ResetPasswordController;
+use Backpack\CRUD\app\Http\Controllers\MyAccountController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,7 +20,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(
 [
-    'namespace'  => 'Backpack\CRUD\app\Http\Controllers',
     'middleware' => config('backpack.base.web_middleware', 'web'),
     'prefix'     => config('backpack.base.route_prefix'),
 ],
@@ -22,34 +27,58 @@ function () {
     // if not otherwise configured, setup the auth routes
     if (config('backpack.base.setup_auth_routes')) {
         // Authentication Routes...
-        Route::get('login', 'Auth\LoginController@showLoginForm')->name('backpack.auth.login');
-        Route::post('login', 'Auth\LoginController@login');
-        Route::get('logout', 'Auth\LoginController@logout')->name('backpack.auth.logout');
-        Route::post('logout', 'Auth\LoginController@logout');
+        Route::group([
+            'controller' => LoginController::class,
+        ], function (): void {
+            Route::get('login', 'showLoginForm')->name('backpack.auth.login');
+            Route::post('login', 'login');
+            Route::get('logout', 'logout')->name('backpack.auth.logout');
+            Route::post('logout', 'logout');
+        });
 
         // Registration Routes...
-        Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('backpack.auth.register');
-        Route::post('register', 'Auth\RegisterController@register');
+        Route::group([
+            'controller' => RegisterController::class,
+        ], function (): void {
+            Route::get('register', 'showRegistrationForm')->name('backpack.auth.register');
+            Route::post('register', 'register');
+        });
 
         // if not otherwise configured, setup the password recovery routes
         if (config('backpack.base.setup_password_recovery_routes', true)) {
-            Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('backpack.auth.password.reset');
-            Route::post('password/reset', 'Auth\ResetPasswordController@reset');
-            Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('backpack.auth.password.reset.token');
-            Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('backpack.auth.password.email')->middleware('backpack.throttle.password.recovery:'.config('backpack.base.password_recovery_throttle_access'));
+            Route::group([
+                'controller' => ForgotPasswordController::class,
+            ], function (): void {
+                Route::get('password/reset', 'showLinkRequestForm')->name('backpack.auth.password.reset');
+                Route::post('password/email', 'sendResetLinkEmail')->name('backpack.auth.password.email')->middleware('backpack.throttle.password.recovery:'.config('backpack.base.password_recovery_throttle_access'));
+            });
+            Route::group([
+                'controller' => ResetPasswordController::class,
+            ], function (): void {
+                Route::get('password/reset/{token}', 'showResetForm')->name('backpack.auth.password.reset.token');
+                Route::post('password/reset', 'reset');
+            });
         }
     }
 
     // if not otherwise configured, setup the dashboard routes
     if (config('backpack.base.setup_dashboard_routes')) {
-        Route::get('dashboard', 'AdminController@dashboard')->name('backpack.dashboard');
-        Route::get('/', 'AdminController@redirect')->name('backpack');
+        Route::group([
+            'controller' => AdminController::class,
+        ], function (): void {
+            Route::get('/', 'redirect')->name('backpack');
+            Route::get('dashboard', 'dashboard')->name('backpack.dashboard');
+        });
     }
 
     // if not otherwise configured, setup the "my account" routes
     if (config('backpack.base.setup_my_account_routes')) {
-        Route::get('edit-account-info', 'MyAccountController@getAccountInfoForm')->name('backpack.account.info');
-        Route::post('edit-account-info', 'MyAccountController@postAccountInfoForm')->name('backpack.account.info.store');
-        Route::post('change-password', 'MyAccountController@postChangePasswordForm')->name('backpack.account.password');
+        Route::group([
+            'controller' => MyAccountController::class,
+        ], function (): void {
+            Route::get('edit-account-info', 'getAccountInfoForm')->name('backpack.account.info');
+            Route::post('edit-account-info', 'postAccountInfoForm')->name('backpack.account.info.store');
+            Route::post('change-password', 'postChangePasswordForm')->name('backpack.account.password');
+        });
     }
 });

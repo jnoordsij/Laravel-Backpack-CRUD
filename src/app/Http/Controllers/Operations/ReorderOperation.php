@@ -15,17 +15,14 @@ trait ReorderOperation
      */
     protected function setupReorderRoutes($segment, $routeName, $controller)
     {
-        Route::get($segment.'/reorder', [
-            'as'        => $routeName.'.reorder',
-            'uses'      => $controller.'@reorder',
+        Route::group([
+            'controller' => $controller,
+            'prefix' => $segment,
             'operation' => 'reorder',
-        ]);
-
-        Route::post($segment.'/reorder', [
-            'as'        => $routeName.'.save.reorder',
-            'uses'      => $controller.'@saveReorder',
-            'operation' => 'reorder',
-        ]);
+        ], function () use ($routeName): void {
+            Route::get('reorder', 'reorder')->name("$routeName.reorder");
+            Route::post('reorder', 'saveReorder')->name("$routeName.save.reorder");
+        });
     }
 
     /**

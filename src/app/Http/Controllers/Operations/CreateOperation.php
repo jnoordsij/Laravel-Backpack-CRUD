@@ -15,17 +15,14 @@ trait CreateOperation
      */
     protected function setupCreateRoutes($segment, $routeName, $controller)
     {
-        Route::get($segment.'/create', [
-            'as'        => $routeName.'.create',
-            'uses'      => $controller.'@create',
+        Route::group([
+            'controller' => $controller,
+            'prefix' => $segment,
             'operation' => 'create',
-        ]);
-
-        Route::post($segment, [
-            'as'        => $routeName.'.store',
-            'uses'      => $controller.'@store',
-            'operation' => 'create',
-        ]);
+        ], function () use ($routeName): void {
+            Route::get('create', 'create')->name("$routeName.create");
+            Route::post('/', 'store')->name("$routeName.store");
+        });
     }
 
     /**

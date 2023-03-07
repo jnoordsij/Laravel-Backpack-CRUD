@@ -15,11 +15,13 @@ trait DeleteOperation
      */
     protected function setupDeleteRoutes($segment, $routeName, $controller)
     {
-        Route::delete($segment.'/{id}', [
-            'as'        => $routeName.'.destroy',
-            'uses'      => $controller.'@destroy',
+        Route::group([
+            'controller' => $controller,
+            'prefix' => $segment,
             'operation' => 'delete',
-        ]);
+        ], function () use ($routeName): void {
+            Route::delete('{id}', 'destroy')->name("$routeName.destroy");
+        });
     }
 
     /**

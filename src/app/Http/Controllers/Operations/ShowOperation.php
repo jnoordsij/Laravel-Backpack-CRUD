@@ -15,11 +15,13 @@ trait ShowOperation
      */
     protected function setupShowRoutes($segment, $routeName, $controller)
     {
-        Route::get($segment.'/{id}/show', [
-            'as'        => $routeName.'.show',
-            'uses'      => $controller.'@show',
+        Route::group([
+            'controller' => $controller,
+            'prefix' => $segment,
             'operation' => 'show',
-        ]);
+        ], function () use ($routeName): void {
+            Route::get('{id}/show', 'show')->name("$routeName.show");
+        });
     }
 
     /**

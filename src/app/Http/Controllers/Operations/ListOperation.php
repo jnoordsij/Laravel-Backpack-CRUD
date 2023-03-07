@@ -15,23 +15,15 @@ trait ListOperation
      */
     protected function setupListRoutes($segment, $routeName, $controller)
     {
-        Route::get($segment.'/', [
-            'as'        => $routeName.'.index',
-            'uses'      => $controller.'@index',
+        Route::group([
+            'controller' => $controller,
+            'prefix' => $segment,
             'operation' => 'list',
-        ]);
-
-        Route::post($segment.'/search', [
-            'as'        => $routeName.'.search',
-            'uses'      => $controller.'@search',
-            'operation' => 'list',
-        ]);
-
-        Route::get($segment.'/{id}/details', [
-            'as'        => $routeName.'.showDetailsRow',
-            'uses'      => $controller.'@showDetailsRow',
-            'operation' => 'list',
-        ]);
+        ], function () use ($routeName): void {
+            Route::get('/', 'index')->name("$routeName.index");
+            Route::post('search', 'search')->name("$routeName.search");
+            Route::get('{id}/details', 'showDetailsRow')->name("$routeName.showDetailsRow");
+        });
     }
 
     /**
