@@ -200,7 +200,7 @@ final class UploadersRepository
     /**
      * Get the upload field macro type for the given object.
      */
-    private function getUploadCrudObjectMacroType(array $crudObject): string|null
+    private function getUploadCrudObjectMacroType(array $crudObject): ?string
     {
         $uploadersGroups = $this->getUploadersGroupsNames();
 

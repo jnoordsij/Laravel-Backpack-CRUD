@@ -166,7 +166,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         return $this->validateRules($attribute, $value);
     }
 
-    protected function validateFieldAndFile(string $attribute, null|array $data = null, array|null $customRules = null): array
+    protected function validateFieldAndFile(string $attribute, ?array $data = null, ?array $customRules = null): array
     {
         $fieldErrors = $this->validateFieldRules($attribute, $data, $customRules);
 
@@ -178,7 +178,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     /**
      * Implementation.
      */
-    public function validateFieldRules(string $attribute, null|array|string|UploadedFile $data = null, array|null $customRules = null): array
+    public function validateFieldRules(string $attribute, null|array|string|UploadedFile $data = null, ?array $customRules = null): array
     {
         $data = $data ?? $this->data;
         $validationRuleAttribute = $this->getValidationAttributeString($attribute);
