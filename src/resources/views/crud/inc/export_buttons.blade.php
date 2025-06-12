@@ -55,6 +55,7 @@
             {
                 extend: 'collection',
                 text: '<i class="la la-download"></i> {{ trans('backpack::crud.export.export') }}',
+                className: 'buttons-collection dropdown-toggle',
                 dropup: true,
                 buttons: [
                     {
@@ -159,6 +160,7 @@
             ,{
                 extend: 'colvis',
                 text: '<i class="la la-eye-slash"></i> {{ trans('backpack::crud.export.column_visibility') }}',
+                className: 'buttons-collection dropdown-toggle',
                 columns: function ( idx, data, node ) {
                     return $(node).attr('data-can-be-visible-in-table') == 'true';
                 },
@@ -173,14 +175,12 @@
             var table = window.crud.tables[tableId];
             
             if (!table || !table.buttons) return;
-            
             table.buttons().each(function(button) {
                 if (button.node.className.indexOf('buttons-columnVisibility') == -1 && button.node.nodeName=='BUTTON') {
-                    button.node.className = button.node.className + " btn-sm";
+                    button.node.className = button.node.className.replace('btn-secondary', 'btn-sm');
                 }
             });
-            
-            $(`#${tableId}_wrapper .dt-buttons`).appendTo($('.datatable_button_stack'));
+
             $('.dt-buttons').addClass('d-xs-block')
                             .addClass('d-sm-inline-block')
                             .addClass('d-md-inline-block')
