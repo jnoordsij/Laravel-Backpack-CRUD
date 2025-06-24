@@ -15,14 +15,14 @@
 
 {{-- Define blade stacks so css and js can be pushed from the fields to these sections. --}}
 
-@section('after_styles')
+@push('after_styles')
 
     {{-- CRUD FORM CONTENT - crud_fields_styles stack --}}
     @stack('crud_fields_styles')
 
-@endsection
+@endpush
 
-@section('after_scripts')
+@push('after_scripts')
 
     {{-- CRUD FORM CONTENT - crud_fields_scripts stack --}}
     @stack('crud_fields_scripts')
@@ -187,7 +187,10 @@
       @if ($crud->inlineErrorsEnabled() && session()->get('errors'))
 
         window.errors = {!! json_encode(session()->get('errors')->getBags()) !!};
+        var submittedFormId = "{{ old('_form_id') }}";
+        var currentFormId = '{{ $id }}';
 
+        if (!submittedFormId || submittedFormId === currentFormId) {
         $.each(errors, function(bag, errorMessages){
           $.each(errorMessages,  function (inputName, messages) {
             var normalizedProperty = inputName.split('.').map(function(item, index){
@@ -231,6 +234,7 @@
             });
         });
       });
+    }
       @endif
 
       $("a[data-bs-toggle='tab']").click(function(){
@@ -245,4 +249,4 @@
     </script>
 
     @include('crud::inc.form_fields_script')
-@endsection
+@endpush
