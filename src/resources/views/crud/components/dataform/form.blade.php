@@ -5,13 +5,10 @@
     <form method="post"
         action="{{ $action }}"
         id="{{ $id }}"
-        @if($hasUploadFields)
-        enctype="multipart/form-data"
-        @endif
+        @if(!empty($name)) name="{{ $name }}" @endif
+        @if($hasUploadFields) enctype="multipart/form-data" @endif
     >
         {!! csrf_field() !!}
-        
-        
 
         <input type="hidden" name="_form_id" value="{{ $id }}">
         @if($method !== 'post')
@@ -26,27 +23,3 @@
         @include('crud::inc.form_save_buttons')
     </form>
 </div>
-
-@push('after_scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize the form fields after loading
-        if (typeof initializeFieldsWithJavascript === 'function') {
-            try {
-                initializeFieldsWithJavascript(document.querySelector('.backpack-form'));
-            } catch (e) {
-                console.error('Error initializing form fields:', e);
-            }
-        }
-
-        // Focus on first focusable field when form is loaded
-        const form = document.querySelector('.backpack-form form');
-        if (form) {
-            const firstField = form.querySelector('input:not([type=hidden]), select, textarea');
-            if (firstField) {
-                firstField.focus();
-            }
-        }
-    });
-</script>
-@endpush
