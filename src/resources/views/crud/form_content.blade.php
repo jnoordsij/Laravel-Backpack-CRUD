@@ -127,24 +127,62 @@
       @endif
 
       // Save button has multiple actions: save and exit, save and edit, save and new
-      var saveActions = $('#saveActions')
-      crudForm        = saveActions.parents('form')
-
+      document.querySelectorAll('form').forEach(function(form) {
+          if (form.querySelector('.saveActions')) {
+              // prevent duplicate entries on double-clicking the submit form
+              form.addEventListener('submit', function(event) {
+                  window.removeEventListener('beforeunload', preventUnload);
+                  const submitButtons = form.querySelectorAll('button[type=submit]');
+                  submitButtons.forEach(button => button.disabled = true);
+              });
+          }
+      });
+      
       // Ctrl+S and Cmd+S trigger Save button click
-      $(document).keydown(function(e) {
-          if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey))
-          {
+      document.addEventListener('keydown', function(e) {
+          if ((e.which === 115 || e.which === 83) && (e.ctrlKey || e.metaKey)) {
               e.preventDefault();
-              $("button[type=submit]").trigger('click');
+              
+              // Find the form that contains the currently focused element
+              let activeForm = null;
+              const focusedElement = document.activeElement;
+              
+              if (focusedElement) {
+                  activeForm = focusedElement.closest('form');
+                  // Check if this form has saveActions
+                  if (!activeForm || !activeForm.querySelector('.saveActions')) {
+                      activeForm = null;
+                  }
+              }
+              
+              // If no focused form with save actions, use the first form with save actions
+              if (!activeForm) {
+                  const formsWithSaveActions = document.querySelectorAll('form');
+                  for (let form of formsWithSaveActions) {
+                      if (form.querySelector('.saveActions')) {
+                          activeForm = form;
+                          break;
+                      }
+                  }
+              }
+              
+              if (activeForm) {
+                  const submitButton = activeForm.querySelector('.saveActions button[type=submit]');
+                  
+                  if (submitButton) {
+                      submitButton.click();
+                  } else {
+                      // Create and dispatch a submit event
+                      const submitEvent = new Event('submit', {
+                          bubbles: true,
+                          cancelable: true
+                      });
+                      activeForm.dispatchEvent(submitEvent);
+                  }
+              }
               return false;
           }
           return true;
-      });
-
-      // prevent duplicate entries on double-clicking the submit form
-      crudForm.submit(function (event) {
-        window.removeEventListener('beforeunload', preventUnload);
-        $("button[type=submit]").prop('disabled', true);
       });
 
       // Place the focus on the first element in the form
