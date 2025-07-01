@@ -559,9 +559,51 @@ function setupTableEvents(tableId, config) {
         // button created by the developer. For that reason, we move them to the end of the body
         // ensuring they are re-evaluated on each draw event.
         document.getElementById(tableId).querySelectorAll('script').forEach(function(script) {
-            const newScript = document.createElement('script');
-            newScript.text = script.text;
-            document.body.appendChild(newScript);
+            const scriptsToLoad = [];
+                    if (script.src) {
+                        // For external scripts with src attribute
+                        const srcUrl = script.src;
+
+                        // Only load the script if it's not already loaded
+                        if (!document.querySelector(`script[src="${srcUrl}"]`)) {
+                            scriptsToLoad.push(new Promise((resolve, reject) => {
+                                const newScript = document.createElement('script');
+
+                                // Copy all attributes from the original script
+                                Array.from(script.attributes).forEach(attr => {
+                                    newScript.setAttribute(attr.name, attr.value);
+                                });
+
+                                // Set up load and error handlers
+                                newScript.onload = resolve;
+                                newScript.onerror = reject;
+
+                                // Append to document to start loading
+                                document.head.appendChild(newScript);
+                            }));
+                        }
+
+                        // Remove the original script tag
+                        script.parentNode.removeChild(script);
+                    } else {
+                        // For inline scripts
+                        const newScript = document.createElement('script');
+
+                        // Copy all attributes from the original script
+                        Array.from(script.attributes).forEach(attr => {
+                            newScript.setAttribute(attr.name, attr.value);
+                        });
+
+                        // Copy the content
+                        newScript.textContent = script.textContent;
+
+                        try {
+                            document.head.appendChild(newScript);
+                        }catch (e) {
+                            console.warn('Error appending inline script:', e);
+                        }
+                    }
+                
         });
 
         // Run table-specific functions and pass the tableId
