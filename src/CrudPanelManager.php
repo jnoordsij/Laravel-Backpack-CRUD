@@ -213,7 +213,8 @@ final class CrudPanelManager
 
         foreach ($trace as $step) {
             if (isset($step['class']) &&
-                is_a($step['class'], CrudControllerContract::class, true)) {
+                is_a($step['class'], CrudControllerContract::class, true) &&
+                ! is_a($step['class'], CrudController::class, true)) {
                 $controller = (string) $step['class'];
                 break;
             }
@@ -228,7 +229,7 @@ final class CrudPanelManager
         $cruds = $this->getCrudPanels();
 
         if (! empty($cruds)) {
-            $crudPanel = reset($cruds);
+            $crudPanel = end($cruds);
 
             return $crudPanel;
         }
