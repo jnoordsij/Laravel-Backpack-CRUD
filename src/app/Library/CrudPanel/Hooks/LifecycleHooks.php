@@ -25,7 +25,8 @@ final class LifecycleHooks
 
         foreach ($hooks as $hook) {
             // Create a unique identifier for this controller+hook combination
-            $hookId = is_null($controller) ? '' : (is_string($controller) ? $controller : $controller::class.'::'.$hook);
+            // Include the full hook name (which includes operation) to ensure uniqueness per operation
+            $hookId = is_null($controller) ? $hook : (is_string($controller) ? $controller : $controller::class).'::'.$hook;
 
             // Skip if this hook has already been executed
             if (isset($this->executedHooks[$hookId])) {
