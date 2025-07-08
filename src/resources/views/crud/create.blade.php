@@ -41,16 +41,16 @@
 				enctype="multipart/form-data"
 				@endif
 		  		>
-			  {!! csrf_field() !!}
-		      {{-- load the view from the application if it exists, otherwise load the one in the package --}}
-		      @if(view()->exists('vendor.backpack.crud.form_content'))
-		      	@include('vendor.backpack.crud.form_content', [ 'fields' => $crud->fields(), 'action' => 'create' ])
-		      @else
-		      	@include('crud::form_content', [ 'fields' => $crud->fields(), 'action' => 'create' ])
-		      @endif
-                {{-- This makes sure that all field assets are loaded. --}}
-                <div class="d-none" id="parentLoadedAssets">{{ json_encode(Basset::loaded()) }}</div>
-	          @include('crud::inc.form_save_buttons')
+                {!! csrf_field() !!}
+                {{-- load the view from the application if it exists, otherwise load the one in the package --}}
+                @if(view()->exists('vendor.backpack.crud.form_content'))
+                    @include('vendor.backpack.crud.form_content', [ 'fields' => $crud->fields(), 'action' => 'create' ])
+                @else
+                    @include('crud::form_content', [ 'fields' => $crud->fields(), 'action' => 'create' ])
+                @endif
+                    {{-- This makes sure that all field assets are loaded. --}}
+                    <div class="d-none" id="parentLoadedAssets">{{ json_encode(Basset::loaded()) }}</div>
+                @include('crud::inc.form_save_buttons')
 		  </form>
 	</div>
 </div>

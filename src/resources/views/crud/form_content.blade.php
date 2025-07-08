@@ -22,6 +22,10 @@
 
 @endpush
 
+@push('before_scripts')
+  @include('crud::inc.form_fields_script')
+@endpush
+
 @push('after_scripts')
 
     {{-- CRUD FORM CONTENT - crud_fields_scripts stack --}}
@@ -287,6 +291,4 @@
       }
       });
     </script>
-
-    @include('crud::inc.form_fields_script')
 @endpush

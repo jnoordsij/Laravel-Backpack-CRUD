@@ -187,7 +187,7 @@
     window.crud = {
         ...window.crud,
 
-        action: "{{ $action ?? "" }}",
+        action: "{{ $action ?? '' }}",
 
         // Subfields callbacks holder
         subfieldsCallbacks: [],
