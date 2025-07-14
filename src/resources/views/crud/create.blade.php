@@ -44,9 +44,9 @@
                 {!! csrf_field() !!}
                 {{-- load the view from the application if it exists, otherwise load the one in the package --}}
                 @if(view()->exists('vendor.backpack.crud.form_content'))
-                    @include('vendor.backpack.crud.form_content', [ 'fields' => $crud->fields(), 'action' => 'create' ])
+                    @include('vendor.backpack.crud.form_content', [ 'fields' => $crud->fields(), 'action' => 'create', 'id' => $id ?? null])
                 @else
-                    @include('crud::form_content', [ 'fields' => $crud->fields(), 'action' => 'create' ])
+                    @include('crud::form_content', [ 'fields' => $crud->fields(), 'action' => 'create', 'id' => $id ?? null])
                 @endif
                     {{-- This makes sure that all field assets are loaded. --}}
                     <div class="d-none" id="parentLoadedAssets">{{ json_encode(Basset::loaded()) }}</div>
