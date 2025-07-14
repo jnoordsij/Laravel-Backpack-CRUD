@@ -56,9 +56,20 @@ return [
 
     'error_page' => [
         'title' => 'Erro :error',
-        'button' => 'Voltar ao início',
+        'button' => 'Voltar à página inicial',
+        'message_4xx' => 'Por favor <a :href_back>volte atrás</a> ou regresse à <a :href_homepage>nossa página inicial</a>.',
+        'message_500' => 'Ocorreu um erro interno do servidor. Se o erro persistir, por favor contacte a equipa de desenvolvimento.',
+        'message_503' => 'O servidor está sobrecarregado ou em manutenção. Por favor, tente novamente mais tarde.',
+        '400' => 'Pedido inválido.',
+        '401' => 'Ação não autorizada.',
+        '403' => 'Acesso proibido.',
+        '404' => 'Página não encontrada.',
+        '405' => 'Método não permitido.',
+        '408' => 'Tempo limite do pedido esgotado.',
+        '429' => 'Demasiados pedidos.',
+        '500' => 'Não é você, sou eu.',
+        '503' => 'Servidor em manutenção ou sobrecarregado.',
     ],
-
     'password_reset' => [
         'greeting' => 'Olá!',
         'subject' => 'Notificação de reposição de password.',

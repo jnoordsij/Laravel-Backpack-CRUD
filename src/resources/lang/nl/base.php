@@ -54,6 +54,23 @@ return [
     'welcome' => 'Welkom!',
     'use_sidebar' => 'Gebruik de menubalk links om inhoud te maken, bewerken of verwijderen.',
 
+    'error_page' => [
+        'title' => 'Fout :error',
+        'button' => 'Breng me naar huis',
+        'message_4xx' => 'Ga alstublieft <a :href_back>terug</a> of keer terug naar <a :href_homepage>onze homepage</a>.',
+        'message_500' => 'Er is een interne serverfout opgetreden. Als de fout aanhoudt, neem dan contact op met het ontwikkelingsteam.',
+        'message_503' => 'De server is overbelast of in onderhoud. Probeer het later opnieuw.',
+        '400' => 'Verkeerd verzoek.',
+        '401' => 'Ongeautoriseerde actie.',
+        '403' => 'Verboden.',
+        '404' => 'Pagina niet gevonden.',
+        '405' => 'Methode niet toegestaan.',
+        '408' => 'Verzoek timeout.',
+        '429' => 'Te veel verzoeken.',
+        '500' => 'Het ligt niet aan jou, het ligt aan mij.',
+        '503' => 'Server is in onderhoud of overbelast.',
+    ],
+
     'password_reset' => [
         'greeting' => 'Hallo!',
         'subject' => 'Wachtwoordherstel notificatie',

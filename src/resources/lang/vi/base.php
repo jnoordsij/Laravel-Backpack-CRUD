@@ -56,7 +56,7 @@ return [
     'welcome' => 'Xin chào!',
     'use_sidebar' => 'Sử dụng các chức năng ở thanh bên để tạo, sửa hoặc xoá các nội dung.',
 
-    'error' => [
+    'error_page' => [
         'title' => 'Lỗi :error',
         'button' => 'Đưa tôi về trang chủ',
         'message_4xx' => 'Vui lòng <a :href_back>quay lại</a> hoặc trở về <a :href_homepage>trang chủ của chúng tôi</a>.',
@@ -70,6 +70,7 @@ return [
         '408' => 'Hết thời gian yêu cầu.',
         '429' => 'Quá nhiều yêu cầu.',
         '500' => 'Không phải lỗi của bạn, mà là của tôi.',
+        '503' => 'Máy chủ đang bảo trì hoặc quá tải.',
     ],
 
     'password_reset' => [

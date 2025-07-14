@@ -56,6 +56,23 @@ return [
     'welcome' => 'Laipni lūgti!',
     'use_sidebar' => 'Izmantojiet sānjoslu pa kreisi, lai izveidotu, rediģētu vai izdzēstu saturu.',
 
+    'error_page' => [
+        'title' => 'Kļūda :error',
+        'button' => 'Aizvest mājās',
+        'message_4xx' => 'Lūdzu <a :href_back>atgriezieties atpakaļ</a> vai dodieties uz <a :href_homepage>mūsu sākumlapu</a>.',
+        'message_500' => 'Radusies servera iekšējā kļūda. Ja kļūda turpinās, sazinieties ar izstrādes komandu.',
+        'message_503' => 'Serveris ir pārslogots vai notiek apkope. Lūdzu, mēģiniet vēlāk.',
+        '400' => 'Slikts pieprasījums.',
+        '401' => 'Neatļauta darbība.',
+        '403' => 'Aizliegts.',
+        '404' => 'Lapa nav atrasta.',
+        '405' => 'Metode nav atļauta.',
+        '408' => 'Pieprasījuma noilgums.',
+        '429' => 'Pārāk daudz pieprasījumu.',
+        '500' => 'Tā nav tava vaina, tā ir mana.',
+        '503' => 'Servers ir apkopē vai pārslogots.',
+    ],
+
     'password_reset' => [
         'greeting' => 'Labdien!',
         'subject' => 'Paroles atjaunošanas paziņojums',

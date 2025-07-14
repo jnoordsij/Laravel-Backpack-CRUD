@@ -70,6 +70,8 @@ return [
         '408' => 'Request timeout.',
         '429' => 'Too many requests.',
         '500' => 'It\'s not you, it\'s me.',
+        '503' => 'Server is under maintenance or overloaded.',
+
     ],
 
     'password_reset' => [

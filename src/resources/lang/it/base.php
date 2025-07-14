@@ -70,6 +70,7 @@ return [
         '408' => 'Timeout della richiesta.',
         '429' => 'Troppe richieste.',
         '500' => 'Non è colpa tua, è colpa nostra.',
+        '503' => 'Server in manutenzione o sovraccarico.',
     ],
 
     'password_reset' => [

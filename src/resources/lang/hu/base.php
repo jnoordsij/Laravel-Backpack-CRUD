@@ -54,6 +54,23 @@ return [
     'welcome' => 'Üdvözöllek!',
     'use_sidebar' => 'Használd a bal oldali sávot tartalom létrehozásához, szerkesztéséhez, vagy törléséhez.',
 
+    'error_page' => [
+        'title' => 'Hiba :error',
+        'button' => 'Vissza a kezdőlapra',
+        'message_4xx' => 'Kérjük <a :href_back>menjen vissza</a> vagy térjen vissza <a :href_homepage>a kezdőlapunkra</a>.',
+        'message_500' => 'Belső szerverhiba történt. Ha a hiba továbbra is fennáll, forduljon a fejlesztői csapathoz.',
+        'message_503' => 'A szerver túlterhelt vagy karbantartás alatt áll. Kérjük, próbálja meg később.',
+        '400' => 'Hibás kérés.',
+        '401' => 'Nem engedélyezett művelet.',
+        '403' => 'Tiltott.',
+        '404' => 'Az oldal nem található.',
+        '405' => 'A módszer nem engedélyezett.',
+        '408' => 'Kérés időtúllépése.',
+        '429' => 'Túl sok kérés.',
+        '500' => 'Nem te vagy a hibás, én vagyok.',
+        '503' => 'A szerver karbantartás alatt vagy túlterhelt.',
+    ],
+
     'password_reset' => [
         'greeting' => 'Szia!',
         'subject' => 'Jelszó visszaállítás',

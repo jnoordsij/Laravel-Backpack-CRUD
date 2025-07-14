@@ -59,4 +59,21 @@ return [
     'unknown_error' => 'Un erreur s’est produite. Veuillez réessayer.',
     'error_saving' => 'Erreur lors de l’enregistrement. Veuillez réessayer.',
     'session_expired_error' => 'Votre session a expiré. Veuillez vous reconnecter à votre compte.',
+
+    'error_page' => [
+        'title' => 'Erreur :error',
+        'button' => 'Retour à l\'accueil',
+        'message_4xx' => 'Veuillez <a :href_back>revenir en arrière</a> ou retourner à <a :href_homepage>notre page d\'accueil</a>.',
+        'message_500' => 'Une erreur interne du serveur s\'est produite. Si l\'erreur persiste, veuillez contacter l\'équipe de développement.',
+        'message_503' => 'Le serveur est surchargé ou en maintenance. Veuillez réessayer plus tard.',
+        '400' => 'Demande incorrecte.',
+        '401' => 'Action non autorisée.',
+        '403' => 'Interdit.',
+        '404' => 'Page non trouvée.',
+        '405' => 'Méthode non autorisée.',
+        '408' => 'Délai d\'attente de la demande.',
+        '429' => 'Trop de demandes.',
+        '500' => 'Ce n\'est pas vous, c\'est moi.',
+        '503' => 'Serveur en maintenance ou surchargé.',
+    ],
 ];

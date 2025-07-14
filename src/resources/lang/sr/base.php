@@ -54,6 +54,23 @@ return [
     'welcome' => 'Dobro došli!',
     'use_sidebar' => 'Upotrebite bočni meni na levoj strani da kreirate, izmenite ili obrišete sadržaj.',
 
+    'error_page' => [
+        'title' => 'Greška :error',
+        'button' => 'Odvedite me kući',
+        'message_4xx' => 'Molimo <a :href_back>idite nazad</a> ili se vratite na <a :href_homepage>našu početnu stranicu</a>.',
+        'message_500' => 'Došlo je do unutrašnje greške servera. Ako greška nastavi da se javlja, kontaktirajte tim za razvoj.',
+        'message_503' => 'Server je preopterećen ili je u održavanju. Molimo pokušajte ponovo kasnije.',
+        '400' => 'Loš zahtev.',
+        '401' => 'Neovlašćena akcija.',
+        '403' => 'Zabranjeno.',
+        '404' => 'Stranica nije pronađena.',
+        '405' => 'Metoda nije dozvoljena.',
+        '408' => 'Vreme zahteva je isteklo.',
+        '429' => 'Previše zahteva.',
+        '500' => 'Nije do vas, do mene je.',
+        '503' => 'Server je u održavanju ili preopterećen.',
+    ],
+
     'password_reset' => [
         'greeting' => 'Zdravo!',
         'subject' => 'Obaveštenje za resetovanje šifre',

@@ -42,4 +42,21 @@ return [
     'dashboard' => 'Forside',
     'handcrafted_by' => 'håndlavet af',
     'powered_by' => 'bygget på',
+
+    'error_page' => [
+        'title' => 'Fejl :error',
+        'button' => 'Tag mig hjem',
+        'message_4xx' => 'Venligst <a :href_back>gå tilbage</a> eller vend tilbage til <a :href_homepage>vores hjemmeside</a>.',
+        'message_500' => 'Der opstod en intern serverfejl. Hvis fejlen fortsætter, kontakt venligst udviklingsteamet.',
+        'message_503' => 'Serveren er overbelastet eller under vedligeholdelse. Prøv venligst igen senere.',
+        '400' => 'Dårlig anmodning.',
+        '401' => 'Uautoriseret handling.',
+        '403' => 'Forbudt.',
+        '404' => 'Side ikke fundet.',
+        '405' => 'Metode ikke tilladt.',
+        '408' => 'Anmodning timeout.',
+        '429' => 'For mange anmodninger.',
+        '500' => 'Det er ikke dig, det er mig.',
+        '503' => 'Server er under vedligeholdelse eller overbelastet.',
+    ],
 ];

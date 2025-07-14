@@ -52,6 +52,23 @@ return [
     'welcome' => 'Willkommen!',
     'use_sidebar' => 'Nutze die Seitenleiste links, um Inhalte zu erstellen oder zu editieren.',
 
+    'error_page' => [
+        'title' => 'Fehler :error',
+        'button' => 'Zur Startseite',
+        'message_4xx' => 'Bitte <a :href_back>gehen Sie zurück</a> oder kehren Sie zu <a :href_homepage>unserer Startseite</a> zurück.',
+        'message_500' => 'Ein interner Serverfehler ist aufgetreten. Wenn der Fehler weiterhin besteht, wenden Sie sich bitte an das Entwicklungsteam.',
+        'message_503' => 'Der Server ist überlastet oder wird gewartet. Bitte versuchen Sie es später erneut.',
+        '400' => 'Ungültige Anfrage.',
+        '401' => 'Unbefugte Aktion.',
+        '403' => 'Verboten.',
+        '404' => 'Seite nicht gefunden.',
+        '405' => 'Methode nicht erlaubt.',
+        '408' => 'Anfrage-Timeout.',
+        '429' => 'Zu viele Anfragen.',
+        '500' => 'Es liegt nicht an dir, es liegt an mir.',
+        '503' => 'Server ist unter Wartung oder überlastet.',
+    ],
+
     'password_reset' => [
         'greeting' => 'Hallo!',
         'subject' => 'Passwort zurücksetzen Information',

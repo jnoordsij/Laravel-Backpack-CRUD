@@ -54,6 +54,23 @@ return [
     'welcome' => 'Selamat datang!',
     'use_sidebar' => 'Gunakan menu kiri untuk membuat, mengedit, atau menghapus konten.',
 
+    'error_page' => [
+        'title' => 'Error :error',
+        'button' => 'Bawa saya pulang',
+        'message_4xx' => 'Silakan <a :href_back>kembali</a> atau kembali ke <a :href_homepage>beranda kami</a>.',
+        'message_500' => 'Terjadi kesalahan server internal. Jika kesalahan berlanjut, harap hubungi tim pengembangan.',
+        'message_503' => 'Server kelebihan beban atau sedang dalam pemeliharaan. Silakan coba lagi nanti.',
+        '400' => 'Permintaan buruk.',
+        '401' => 'Tindakan tidak sah.',
+        '403' => 'Terlarang.',
+        '404' => 'Halaman tidak ditemukan.',
+        '405' => 'Metode tidak diizinkan.',
+        '408' => 'Waktu habis permintaan.',
+        '429' => 'Terlalu banyak permintaan.',
+        '500' => 'Bukan kamu, itu aku.',
+        '503' => 'Server sedang dalam pemeliharaan atau kelebihan beban.',
+    ],
+
     'password_reset' => [
         'greeting' => 'Halo!',
         'subject' => 'Setel Ulang Pemberitahuan Kata Sandi',

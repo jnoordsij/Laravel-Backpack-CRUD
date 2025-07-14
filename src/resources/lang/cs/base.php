@@ -54,6 +54,23 @@ return [
     'welcome' => 'Vítejte!',
     'use_sidebar' => 'Použíjte boční menu k vytvoření, editaci nebo smazání záznamů.',
 
+    'error_page' => [
+        'title' => 'Chyba :error',
+        'button' => 'Přejít na domovskou stránku',
+        'message_4xx' => 'Prosím <a :href_back>vraťte se zpět</a> nebo přejděte na <a :href_homepage>naši domovskou stránku</a>.',
+        'message_500' => 'Došlo k vnitřní chybě serveru. Pokud chyba přetrvává, kontaktujte vývojářský tým.',
+        'message_503' => 'Server je přetížený nebo v údržbě. Zkuste to prosím později.',
+        '400' => 'Neplatný požadavek.',
+        '401' => 'Neautorizovaná akce.',
+        '403' => 'Zakázáno.',
+        '404' => 'Stránka nenalezena.',
+        '405' => 'Metoda není povolena.',
+        '408' => 'Časový limit požadavku.',
+        '429' => 'Příliš mnoho požadavků.',
+        '500' => 'Není to váš problém, je to můj.',
+        '503' => 'Server je v údržbě nebo přetížený.',
+    ],
+
     'password_reset' => [
         'greeting' => 'Vítejte!',
         'subject' => 'Žádost o nové heslo',
