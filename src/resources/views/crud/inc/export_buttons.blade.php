@@ -30,6 +30,24 @@
                 node.querySelector('select')?.selectedOptions[0]?.value ??
                 dataTablesExportStrip(data),
         };
+
+        let getColumnVisibility = function(dt, idx, node) {
+            try {
+                var $tableFromNode = $(node).closest('table');
+                
+                if ($tableFromNode.length === 0) {
+                    return false;
+                }
+                
+                var $header = $tableFromNode.find('thead th').eq(idx);
+                
+                var isDomVisible = $header.length > 0 && $header.is(':visible') && $header.css('display') !== 'none';
+                
+                return isDomVisible;
+            } catch (e) {
+                return true; // Default to visible if there's an error
+            }
+        };
     
         // Create an export buttons configuration that can be applied to any table
         window.crud.exportButtonsConfig = [
@@ -44,18 +62,18 @@
                         extend: 'copyHtml5',
                         exportOptions: {
                             columns: function ( idx, data, node ) {
-                                // Use the current table from the crud.table object
                                 var dt = $(node).closest('table').DataTable();
-                                var $column = dt.column(idx);  
-                                return  ($column.visible() && $(node).attr('data-visible-in-export') != 'false') || $(node).attr('data-force-export') == 'true';
+                                var isVisible = getColumnVisibility(dt, idx, node);
+                                var isExportable = $(node).attr('data-visible-in-export') == 'true';
+                                var isForceExport = $(node).attr('data-force-export') == 'true';
+
+                                if(isForceExport && isExportable) {
+                                   return true;
+                                }
+                                return isVisible && isExportable;
                             },
                             format: dataTablesExportFormat,
                         },
-                        action: function(e, dt, button, config) {
-                            window.crud.responsiveToggle(dt);
-                            $.fn.DataTable.ext.buttons.copyHtml5.action.call(this, e, dt, button, config);
-                            window.crud.responsiveToggle(dt);
-                        }
                     },
                     {
                         name: 'excelHtml5',
@@ -63,16 +81,17 @@
                         exportOptions: {
                             columns: function ( idx, data, node ) {
                                 var dt = $(node).closest('table').DataTable();
-                                var $column = dt.column(idx);  
-                                return  ($column.visible() && $(node).attr('data-visible-in-export') != 'false') || $(node).attr('data-force-export') == 'true';
+                                var isVisible = getColumnVisibility(dt, idx, node);
+                                var isExportable = $(node).attr('data-visible-in-export') == 'true';
+                                var isForceExport = $(node).attr('data-force-export') == 'true';
+                                
+                                if(isForceExport && isExportable) {
+                                   return true;
+                                }
+                                return isVisible && isExportable;
                             },
                             format: dataTablesExportFormat,
                         },
-                        action: function(e, dt, button, config) {
-                            window.crud.responsiveToggle(dt);
-                            $.fn.DataTable.ext.buttons.excelHtml5.action.call(this, e, dt, button, config);
-                            window.crud.responsiveToggle(dt);
-                        }
                     },
                     {
                         name: 'csvHtml5',
@@ -80,16 +99,18 @@
                         exportOptions: {
                             columns: function ( idx, data, node ) {
                                 var dt = $(node).closest('table').DataTable();
-                                var $column = dt.column(idx);  
-                                return  ($column.visible() && $(node).attr('data-visible-in-export') != 'false') || $(node).attr('data-force-export') == 'true';
+                                var isVisible = getColumnVisibility(dt, idx, node);
+                                var isExportable = $(node).attr('data-visible-in-export') == 'true';
+                                var isForceExport = $(node).attr('data-force-export') == 'true';
+
+                                 if(isForceExport && isExportable) {
+                                   return true;
+                                }
+                                
+                                return isVisible && isExportable;
                             },
                             format: dataTablesExportFormat,
                         },
-                        action: function(e, dt, button, config) {
-                            window.crud.responsiveToggle(dt);
-                            $.fn.DataTable.ext.buttons.csvHtml5.action.call(this, e, dt, button, config);
-                            window.crud.responsiveToggle(dt);
-                        }
                     },
                     {
                         name: 'pdfHtml5',
@@ -97,17 +118,19 @@
                         exportOptions: {
                             columns: function ( idx, data, node ) {
                                 var dt = $(node).closest('table').DataTable();
-                                var $column = dt.column(idx);  
-                                return  ($column.visible() && $(node).attr('data-visible-in-export') != 'false') || $(node).attr('data-force-export') == 'true';
+                                var isVisible = getColumnVisibility(dt, idx, node);
+                                var isExportable = $(node).attr('data-visible-in-export') == 'true';
+                                var isForceExport = $(node).attr('data-force-export') == 'true';
+
+                                if(isForceExport && isExportable) {
+                                   return true;
+                                }
+                                
+                                return isVisible && isExportable;
                             },
                             format: dataTablesExportFormat,
                         },
-                        orientation: 'landscape',
-                        action: function(e, dt, button, config) {
-                            window.crud.responsiveToggle(dt);
-                            $.fn.DataTable.ext.buttons.pdfHtml5.action.call(this, e, dt, button, config);
-                            window.crud.responsiveToggle(dt);
-                        }
+                        orientation: 'landscape'
                     },
                     {
                         name: 'print',
@@ -115,17 +138,19 @@
                         exportOptions: {
                             columns: function ( idx, data, node ) {
                                 var dt = $(node).closest('table').DataTable();
-                                var $column = dt.column(idx);  
-                                return  ($column.visible() && $(node).attr('data-visible-in-export') != 'false') || $(node).attr('data-force-export') == 'true';
+                                var isVisible = getColumnVisibility(dt, idx, node);
+                                var isExportable = $(node).attr('data-visible-in-export') == 'true';
+                                var isForceExport = $(node).attr('data-force-export') == 'true';
+
+                                if(isForceExport && isExportable) {
+                                   return true;
+                                }
+                                
+                                return isVisible && isExportable;
                             },
                             format: dataTablesExportFormat,
                         },
                         orientation: 'landscape',
-                        action: function(e, dt, button, config) {
-                            window.crud.responsiveToggle(dt);
-                            $.fn.DataTable.ext.buttons.print.action.call(this, e, dt, button, config);
-                            window.crud.responsiveToggle(dt);
-                        }
                     }
                 ]
             }
@@ -164,6 +189,49 @@
     
         // Add the function to the draw event queue
         window.crud.defaultTableConfig.addFunctionToDataTablesDrawEventQueue('moveExportButtonsToTopRight');
+
+        window.crud.setupExportHandlers = function(tableId) {
+            tableId = tableId || 'crudTable';
+            var table = window.crud.tables[tableId];
+            
+            if (!table || !table.buttons) return;
+            
+            // Add click handlers to all export buttons
+            table.buttons().each(function(button, idx) {
+                var buttonNode = button.node;
+                if (buttonNode && (
+                    buttonNode.classList.contains('buttons-pdf') ||
+                    buttonNode.classList.contains('buttons-excel') ||
+                    buttonNode.classList.contains('buttons-csv') ||
+                    buttonNode.classList.contains('buttons-copy') ||
+                    buttonNode.classList.contains('buttons-print')
+                )) {
+                    // Remove any existing handlers
+                    $(buttonNode).off('click.responsiveExport');
+                    
+                    // Add our custom handler
+                    $(buttonNode).on('click.responsiveExport', function(e) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        
+                        window.crud.responsiveToggle(table);
+                        
+                        setTimeout(function() {
+                            $(buttonNode).off('click.responsiveExport');
+                            
+                            $(buttonNode).trigger('click');
+                            
+                            setTimeout(function() {
+                                $(buttonNode).on('click.responsiveExport', arguments.callee);
+                            }, 100);
+                        }, 50);
+                    });
+                }
+            });
+        };
+
+        // Add the export handler setup to the draw event queue
+        window.crud.defaultTableConfig.addFunctionToDataTablesDrawEventQueue('setupExportHandlers');
     </script>
     @push('after_styles')
         @basset('https://cdn.datatables.net/buttons/3.2.0/css/buttons.bootstrap5.min.css')
