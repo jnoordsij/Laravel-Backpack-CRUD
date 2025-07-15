@@ -61,8 +61,49 @@ form .select2.select2-container {
 }
 
 /*Table - List View*/
+.dataTables_wrapper {
+    position: relative;
+    isolation: isolate;
+}
+
 .dataTables_wrapper div.row .col-sm-12 {
     position: relative;
+}
+
+.dataTables_wrapper .table-responsive {
+    position: relative;
+}
+
+.dataTables_wrapper table.dataTable {
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure any processing indicator within or related to table wrapper covers full area */
+.dataTables_wrapper,
+div[id$="_wrapper"] {
+    position: relative !important;
+}
+
+.dataTables_wrapper > .dataTables_processing,
+.dataTables_wrapper > .dt-processing,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dt-processing,
+div[id$="_wrapper"] > .dataTables_processing,
+div[id$="_wrapper"] > .dt-processing,
+div[id$="_wrapper"] .dataTables_processing,
+div[id$="_wrapper"] .dt-processing {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 60px !important;
+    width: 100% !important;
+    height: calc(100% - 60px) !important;
+    transform: none !important;
+    margin: 0 !important;
+    z-index: 1000 !important;
+    inset: unset !important;
 }
 .navbar-filters {
     min-height: 25px;
@@ -629,42 +670,59 @@ table.dataTable tr th:first-child, table.dataTable tr td:first-child, table.data
     padding-left: 0.6rem;
 }
 
+/* Processing indicator - global styles */
 .dataTables_processing,
 .dt-processing {
-    background: rgba(255, 255, 255, 0.8) !important;
-    color: transparent !important; /* Hide any text */
-    border: none !important;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
-    border-radius: 5px !important;
-    width: 100% !important;
-    height: 100% !important;
     position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    transform: none !important;
-    margin: 0 !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
     padding: 0 !important;
-    z-index: 999 !important;
+    z-index: 1000 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
+    overflow: hidden !important;
+    /* Aggressive text hiding */
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+    text-indent: -9999px !important;
+    white-space: nowrap !important;
+    text-shadow: none !important;
+    text-decoration: none !important;
 }
 
+/* Hide ALL text content and children */
+.dataTables_processing *:not(img),
+.dt-processing *:not(img),
+.dataTables_processing::before,
+.dataTables_processing::after,
+.dt-processing::before,
+.dt-processing::after {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    text-indent: -9999px !important;
+}
+
+/* Show only spinner image */
 .dataTables_processing img,
 .dt-processing img {
     display: block !important;
-    width: 30px !important;
-    height: 30px !important;
+    width: 40px !important;
+    height: 40px !important;
     opacity: 1 !important;
     visibility: visible !important;
     margin: 0 auto !important;
+    position: relative !important;
+    z-index: 1001 !important;
 }
 
-.dataTables_processing > *:not(img),
-.dt-processing > *:not(img) {
-    display: none !important;
-}
-
+/* Hide when not active */
 .dataTables_processing:not([style*="block"]),
 .dt-processing:not([style*="block"]) {
     display: none !important;

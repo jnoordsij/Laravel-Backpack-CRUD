@@ -442,6 +442,33 @@ window.crud.initializeTable = function(tableId, customConfig = {}) {
         };
     }
     
+    // Add initComplete callback to fix processing indicator positioning
+    dataTableConfig.initComplete = function(settings, json) {
+        // Move processing indicator into table wrapper if it exists outside
+        const tableWrapper = document.querySelector('#' + tableId + '_wrapper');
+        const processingIndicator = document.querySelector('.dataTables_processing, .dt-processing');
+        
+        if (tableWrapper && processingIndicator && !tableWrapper.contains(processingIndicator)) {
+            // Move the processing indicator into the wrapper
+            tableWrapper.appendChild(processingIndicator);
+            
+            // Ensure proper positioning
+            processingIndicator.style.position = 'absolute';
+            processingIndicator.style.top = '0';
+            processingIndicator.style.left = '0';
+            processingIndicator.style.right = '0';
+            processingIndicator.style.bottom = '0';
+            processingIndicator.style.width = 'auto';
+            processingIndicator.style.height = 'auto';
+            processingIndicator.style.zIndex = '1000';
+        }
+        
+        // Call any existing initComplete function
+        if (typeof window.crud.initCompleteCallback === 'function') {
+            window.crud.initCompleteCallback.call(this, settings, json);
+        }
+    };
+    
     // Store the dataTableConfig in the config object for future reference
     config.dataTableConfig = dataTableConfig;
     
@@ -639,6 +666,55 @@ function setupTableEvents(tableId, config) {
             $(`#${tableId}`).removeClass('has-hidden-columns').addClass('has-hidden-columns');
         }
     }).dataTable();
+
+    $(`#${tableId}`).on('processing.dt', function(e, settings, processing) {
+        if (processing) {
+            setTimeout(function() {
+                const tableWrapper = document.querySelector('#' + tableId + '_wrapper');
+                const processingIndicator = document.querySelector('.dataTables_processing, .dt-processing');
+                
+                if (tableWrapper && processingIndicator) {
+                    if (!tableWrapper.contains(processingIndicator)) {
+                        tableWrapper.appendChild(processingIndicator);
+                    }
+                    
+                    processingIndicator.style.cssText = `
+                        position: absolute !important;
+                        top: 0 !important;
+                        left: 0 !important;
+                        right: 0 !important;
+                        bottom: 60px !important;
+                        width: 100% !important;
+                        height: calc(100% - 60px) !important;
+                        z-index: 1000 !important;
+                        transform: none !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        display: flex !important;
+                        justify-content: center !important;
+                        align-items: center !important;
+                        background: rgba(255, 255, 255, 0.8) !important;
+                        font-size: 0 !important;
+                        color: transparent !important;
+                        text-indent: -9999px !important;
+                        overflow: hidden !important;
+                    `;
+                    
+                    tableWrapper.style.position = 'relative';
+                    
+                    const allChildren = processingIndicator.querySelectorAll('*:not(img)');
+                    allChildren.forEach(child => {
+                        child.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important;';
+                    });
+                    
+                    const images = processingIndicator.querySelectorAll('img');
+                    images.forEach(img => {
+                        img.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; width: 40px !important; height: 40px !important; margin: 0 auto !important;';
+                    });
+                }
+            }, 10);
+        }
+    });
 
     // when datatables-colvis (column visibility) is toggled
     $(`#${tableId}`).on('column-visibility.dt', function(event) {
