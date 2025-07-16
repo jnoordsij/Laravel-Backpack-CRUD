@@ -64,6 +64,26 @@ class BackpackServiceProvider extends ServiceProvider
         $this->sendUsageStats();
 
         Basset::addViewPath(realpath(__DIR__.'/resources/views'));
+
+        foreach (config('backpack.ui.styles', []) as $style) {
+            if (is_array($style)) {
+                foreach ($style as $file) {
+                    Basset::map($file);
+                }
+            } else {
+                Basset::map($style);
+            }
+        }
+
+        foreach (config('backpack.ui.scripts', []) as $script) {
+            if (is_array($script)) {
+                foreach ($script as $file) {
+                    Basset::map($file);
+                }
+            } else {
+                Basset::map($script);
+            }
+        }
     }
 
     /**
