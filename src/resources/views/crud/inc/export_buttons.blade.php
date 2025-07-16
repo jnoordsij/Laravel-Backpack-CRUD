@@ -186,9 +186,6 @@
                             .addClass('d-md-inline-block')
                             .addClass('d-lg-inline-block');
         };
-    
-        // Add the function to the draw event queue
-        window.crud.defaultTableConfig.addFunctionToDataTablesDrawEventQueue('moveExportButtonsToTopRight');
 
         window.crud.setupExportHandlers = function(tableId) {
             tableId = tableId || 'crudTable';
@@ -229,9 +226,6 @@
                 }
             });
         };
-
-        // Add the export handler setup to the draw event queue
-        window.crud.defaultTableConfig.addFunctionToDataTablesDrawEventQueue('setupExportHandlers');
     </script>
     @push('after_styles')
         @basset('https://cdn.datatables.net/buttons/3.2.0/css/buttons.bootstrap5.min.css')

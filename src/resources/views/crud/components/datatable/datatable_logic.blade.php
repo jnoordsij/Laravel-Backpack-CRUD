@@ -310,19 +310,25 @@ window.crud.initializeTable = function(tableId, customConfig = {}) {
             topEnd: null,
             bottomEnd: null,
             bottomStart: null,
-            bottom: [
+            bottom: config.exportButtons ? [
                 'pageLength',
                 {
-                    buttons: config.exportButtons ? window.crud.exportButtonsConfig : []
+                    buttons: window.crud.exportButtonsConfig
                 },
                 {
                     paging: {
                         firstLast: false,
                     }
                 }
+            ] : [
+                'pageLength',
+                {
+                    paging: {
+                        firstLast: false,
+                    }
+                }
             ]
-        },
-        buttons: []
+        }
     };
     
     // Add responsive details if needed
@@ -552,6 +558,14 @@ function setupTableUI(tableId, config) {
         new $.fn.dataTable.Buttons(window.crud.tables[tableId], {
             buttons: window.crud.exportButtonsConfig
         });
+        
+        if (typeof window.crud.moveExportButtonsToTopRight === 'function') {
+            config.addFunctionToDataTablesDrawEventQueue('moveExportButtonsToTopRight');
+        }
+        if (typeof window.crud.setupExportHandlers === 'function') {
+            config.addFunctionToDataTablesDrawEventQueue('setupExportHandlers');
+        }
+        
         // Initialize the buttons and place them in the correct container
         if (typeof window.crud.moveExportButtonsToTopRight === 'function') {
             window.crud.moveExportButtonsToTopRight(tableId);
