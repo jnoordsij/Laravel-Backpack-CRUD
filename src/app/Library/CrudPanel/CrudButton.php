@@ -295,9 +295,11 @@ class CrudButton implements Arrayable
      * The HTML itself of the button.
      *
      * @param  object|null  $entry  The eloquent Model for the current entry or null if no current entry.
+     * @param  \Backpack\CRUD\app\Library\CrudPanel\CrudPanel|null  $crud  The CRUD panel instance.
+     * @param  string|null  $crudTableId  The ID of the DataTable for multi-table support.
      * @return \Illuminate\Contracts\View\View
      */
-    public function getHtml($entry = null, ?CrudPanel $crud = null)
+    public function getHtml($entry = null, ?CrudPanel $crud = null, ?string $crudTableId = null)
     {
         $button = $this;
         $crud = $crud ?? $this->crud();
@@ -311,7 +313,7 @@ class CrudButton implements Arrayable
         }
 
         if ($this->type == 'view') {
-            return view($button->getFinalViewPath(), compact('button', 'crud', 'entry'));
+            return view($button->getFinalViewPath(), compact('button', 'crud', 'entry', 'crudTableId'));
         }
 
         abort(500, 'Unknown button type', ['developer-error-exception']);

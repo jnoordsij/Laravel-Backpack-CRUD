@@ -1,5 +1,5 @@
 @if ($crud->buttons()->where('stack', $stack)->count())
 	@foreach ($crud->buttons()->where('stack', $stack) as $button)
-	  {!! $button->getHtml($entry ?? null, $crud) !!}
+	  {!! $button->getHtml($entry ?? null, $crud, $crudTableId ?? null) !!}
 	@endforeach
 @endif
