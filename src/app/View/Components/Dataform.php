@@ -17,6 +17,7 @@ class Dataform extends Component
      * @param  string  $operation  The operation to use (create, update, etc.)
      * @param  string|null  $action  Custom form action URL
      * @param  string  $method  Form method (post, put, etc.)
+     * @param  bool  $focusOnFirstField  Whether to focus on the first field when form loads
      */
     public function __construct(
         public string $controller,

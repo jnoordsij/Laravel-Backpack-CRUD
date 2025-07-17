@@ -234,6 +234,9 @@
 
         // Only display errors if this is the form that was submitted
         if (submittedFormId && submittedFormId === currentFormId) {
+          var firstErrorField = null;
+          var firstErrorTab = null;
+          
           $.each(errors, function(bag, errorMessages){
             $.each(errorMessages, function (inputName, messages) {
               var normalizedProperty = inputName.split('.').map(function(item, index){
@@ -245,6 +248,17 @@
                           $('#' + currentFormId + ' [name="' + normalizedProperty + '[]"]') :
                           $('#' + currentFormId + ' [name="' + normalizedProperty + '"]'),
                           container = field.closest('.form-group');
+
+              // Store the first error field for focusing
+              if (firstErrorField === null && field.length > 0) {
+                firstErrorField = field.first();
+                @if ($crud->tabsEnabled())
+                var tab_container = $(container).closest('[role="tabpanel"]');
+                if (tab_container.length) {
+                  firstErrorTab = tab_container.attr('id');
+                }
+                @endif
+              }
 
               // iterate the inputs to add invalid classes to fields and red text to the field container.
               container.find('input, textarea, select').each(function() {
@@ -278,6 +292,28 @@
               });
             });
           });
+
+          // Focus on the first error field
+          if (firstErrorField !== null) {
+            @if ($crud->tabsEnabled())
+            // Switch to the tab containing the first error if needed
+            if (firstErrorTab) {
+              $('.nav a[href="#' + firstErrorTab + '"]').tab('show');
+            }
+            @endif
+            
+            // Focus on the first error field
+            setTimeout(function() {
+              const fieldOffset = firstErrorField.offset().top;
+              const scrollTolerance = $(window).height() / 2;
+              
+              triggerFocusOnFirstInputField(firstErrorField);
+              
+              if (fieldOffset > scrollTolerance) {
+                $('html, body').animate({scrollTop: (fieldOffset - 30)});
+              }
+            }, 100);
+          }
         }
       @endif
 
