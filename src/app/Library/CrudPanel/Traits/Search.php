@@ -266,7 +266,7 @@ trait Search
         // add the buttons as the last column
         if ($this->buttons()->where('stack', 'line')->count()) {
             $crudTableId = request()->input('datatable_id', 'crudTable');
-            
+
             $row_items[] = \View::make('crud::inc.button_stack', ['stack' => 'line'])
                                 ->with('crud', $this)
                                 ->with('entry', $entry)
