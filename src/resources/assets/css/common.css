@@ -1339,3 +1339,7 @@ div.dt-scroll-body {
         grid-column: span 12 / span 12;
     }
 }
+
+.dt-container .crud_bulk_actions_checkbox, .dt-container table.dataTable .crud_bulk_actions_checkbox {
+    margin: 0 0.6rem 0 0.45rem;
+}
