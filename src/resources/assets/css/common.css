@@ -941,7 +941,7 @@ div.dt-scroll-body {
 }
 
 .select2-container--bootstrap .select2-results__option--highlighted[aria-selected] {
-    background-color: #3875d7;
+    background-color: #7c69ef !important;
     color: #fff;
 }
 
