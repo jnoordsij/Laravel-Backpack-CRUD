@@ -309,7 +309,7 @@ window.crud.initializeTable = function(tableId, customConfig = {}) {
             topStart: null,
             topEnd: null,
             bottomEnd: null,
-            bottomStart: null,
+            bottomStart: 'info',
             bottom: config.exportButtons ? [
                 'pageLength',
                 {
@@ -813,7 +813,7 @@ document.addEventListener('backpack:filter:changed', function (event) {
     let shouldUpdateUrl = event.detail.shouldUpdateUrl;
     let debounce = event.detail.debounce;
     
-    updateDatatablesOnFilterChange(filterName, filterValue, filterValue || shouldUpdateUrl, debounce, tableId);
+    updateDatatablesOnFilterChange(filterName, filterValue, shouldUpdateUrl, debounce, tableId);
 });
 
 // Update the updateDatatablesOnFilterChange function to support multiple tables
@@ -837,7 +837,7 @@ function updateDatatablesOnFilterChange(filterName, filterValue, shouldUpdateUrl
     
     // Update the browser URL if needed
     if (shouldUpdateUrl) {
-        tableConfig.updateUrl(newUrl);
+        window.crud.updateUrl(newUrl);
     }
     
     // Reload the table with the new URL if needed
