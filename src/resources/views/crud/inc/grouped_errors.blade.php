@@ -1,12 +1,12 @@
 {{-- Show the errors, if any --}}
 @if ($crud->groupedErrorsEnabled() && session()->get('errors'))
     @php
-        $submittedFormId = old('_form_id') ?? null;
-        $currentFormId = $id ?? null;
+        $submittedFormId = old('_form_id') ?? 'crudForm';
+        $currentFormId = $id ?? 'crudForm';
     @endphp
     @if (!$submittedFormId || $submittedFormId === $currentFormId)
-    <div class="alert alert-danger">
-        <ul class="list-unstyled">
+    <div class="alert alert-danger text-danger">
+        <ul class="list-unstyled mb-0">
             @foreach(session()->get('errors')->getBags() as $bag => $errorMessages)
                 @foreach($errorMessages->getMessages() as $errorMessageForInput)
                     @foreach($errorMessageForInput as $message)

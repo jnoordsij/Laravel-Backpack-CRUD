@@ -10,7 +10,6 @@
     >
         {!! csrf_field() !!}
 
-        <input type="hidden" name="_form_id" value="{{ $id }}">
         @if($method !== 'post')
             @method($method)
         @endif
