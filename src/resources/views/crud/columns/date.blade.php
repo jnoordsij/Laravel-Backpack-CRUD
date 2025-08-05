@@ -5,6 +5,7 @@
     $column['prefix'] = $column['prefix'] ?? '';
     $column['suffix'] = $column['suffix'] ?? '';
     $column['format'] = $column['format'] ?? backpack_theme_config('default_date_format');
+    $column['locale'] = $column['locale'] ?? App::getLocale();
     $column['text'] = $column['default'] ?? '-';
 
     if($column['value'] instanceof \Closure) {
@@ -12,9 +13,14 @@
     }
 
     if(!empty($column['value'])) {
-        $date = \Carbon\Carbon::parse($column['value'])
-            ->locale(App::getLocale())
-            ->isoFormat($column['format']);
+        $date = \Carbon\Carbon::parse($column['value']);
+
+        if ($column['format'] instanceof \Closure) {
+            $date = $column['format']($date, $entry);
+        } else {
+            $date = $date->locale($column['locale'])
+                ->isoFormat($column['format']);
+        }
 
         $column['text'] = $column['prefix'].$date.$column['suffix'];
     }
