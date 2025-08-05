@@ -6,6 +6,11 @@
     $column['suffix'] = $column['suffix'] ?? '';
     $column['wrapper']['element'] = $column['wrapper']['element'] ?? 'pre';
     $column['text'] = $column['default'] ?? '-';
+    $column['toggle'] = $column['toggle'] ?? false;
+
+    if ($column['toggle']) {
+        $column['wrapper']['class'] = 'd-none mt-2';
+    }
 
     if(is_string($column['value'])) {
         $column['value'] = json_decode($column['value'], true);
@@ -20,6 +25,9 @@
     }
 @endphp
 
+@if ($column['toggle'])
+<button type="button" class="btn btn-sm btn-info" onclick="this.nextElementSibling.classList.toggle('d-none');this.textContent=='Show'?this.textContent='Hide':this.textContent='Show'">Show</button>
+@endif
 @includeWhen(!empty($column['wrapper']), 'crud::columns.inc.wrapper_start')
 @if($column['escaped'])
 {{ $column['text'] }}
