@@ -784,6 +784,7 @@ function setupTableEvents(tableId, config) {
 document.addEventListener('backpack:filters:cleared', function (event) {       
     // Get the table ID from the event detail or default to the current table ID
     const tableId = event.detail && event.detail.tableId ? event.detail.tableId : 'crudTable';
+    
     if (!window.crud.tableConfigs[tableId]) return;
     
     const config = window.crud.tableConfigs[tableId];
@@ -835,9 +836,10 @@ function updateDatatablesOnFilterChange(filterName, filterValue, shouldUpdateUrl
     // Set the new URL for the table
     table.ajax.url(newUrl);
     
-    // Update the browser URL if needed
+    // Update the browser URL if needed - use browser URL, not AJAX URL
     if (shouldUpdateUrl) {
-        window.crud.updateUrl(newUrl);
+        let browserUrl = addOrUpdateUriParameter(window.location.href, filterName, filterValue);
+        tableConfig.updateUrl(browserUrl);
     }
     
     // Reload the table with the new URL if needed
