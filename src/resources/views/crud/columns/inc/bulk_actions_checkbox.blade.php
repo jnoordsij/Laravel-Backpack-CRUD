@@ -147,6 +147,9 @@ window.crud.addBulkActionMainCheckboxesFunctionality = function(tableId = 'crudT
             // make sure all other main checkboxes have the same checked status
             mainCheckboxes.forEach(elem => elem.checked = checkbox.checked);
 
+            // Ensure buttons are updated after mass checkbox changes
+            window.crud.enableOrDisableBulkButtons(tableId);
+
             event.stopPropagation();
         };
     });
@@ -174,16 +177,38 @@ if (typeof window.crud.enableOrDisableBulkButtons !== 'function') {
         const hasBulkActions = tableElement.getAttribute('data-has-bulk-actions') === 'true' || 
                           tableElement.getAttribute('data-has-bulk-actions') === '1';
         
-        // Find all bulk buttons
-        const tableWrapper = document.getElementById(`${tableId}_wrapper`);
-        const bulkButtons = tableWrapper.querySelectorAll('.bulk-button');
+        // Find all bulk buttons - search in table-specific locations first
+        let bulkButtons = [];
+        
+        const tableSpecificContainers = [
+            document.querySelector(`#bottom_buttons_${tableId}`),
+            document.querySelector(`#datatable_button_stack_${tableId}`)
+        ];
+        
+        for (const container of tableSpecificContainers) {
+            if (container) {
+                const containerButtons = container.querySelectorAll('.bulk-button');
+                if (containerButtons.length > 0) {
+                    bulkButtons = containerButtons;
+                    break;
+                }
+            }
+        }
+        
+        if (bulkButtons.length === 0) {
+            const tableWrapper = document.getElementById(`${tableId}_wrapper`);
+            if (tableWrapper) {
+                bulkButtons = tableWrapper.querySelectorAll('.bulk-button');
+            }
+        }
         
         // Update all buttons based on selection state
         bulkButtons.forEach(btn => {
             if (hasSelectedItems) {
                 btn.classList.remove('disabled');
+                btn.removeAttribute('disabled');
 
-            if (btn.hasAttribute('onclick') && !btn._onclickReplaced) {
+                if (btn.hasAttribute('onclick') && !btn._onclickReplaced) {
                     const originalOnclick = btn.getAttribute('onclick');
                     
                     // Remove the original onclick attribute
@@ -216,6 +241,7 @@ if (typeof window.crud.enableOrDisableBulkButtons !== 'function') {
                 }
             } else {
                 btn.classList.add('disabled');
+                btn.setAttribute('disabled', 'disabled');
             }
         });
     }
