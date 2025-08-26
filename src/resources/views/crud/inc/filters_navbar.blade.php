@@ -193,19 +193,61 @@
                     let closestTable = null;
                     let navbarParent = navbar.parentElement;
                     
-                    // Look for the datatable in the DOM
+                    // Look for the datatable in the DOM - search in the entire document if needed
                     if (navbarParent) {
-                        // First try to find a table with an ID that starts with the specified prefix
-                        closestTable = navbarParent.querySelector('table[id^="datatable"]');
+                        // First try to find a table with class crud-table
+                        closestTable = navbarParent.querySelector('table.crud-table');
+                        
+                        // If not found, try to find a table with an ID that starts with "crudTable"
+                        if (!closestTable) {
+                            closestTable = navbarParent.querySelector('table[id^="crudTable"]');
+                        }
                         
                         // If not found, try to find any table that might be the datatable
                         if (!closestTable) {
                             closestTable = navbarParent.querySelector('table.dataTable');
                         }
+                        
+                        // If still not found, search in the whole document
+                        if (!closestTable) {
+                            closestTable = document.querySelector('table.crud-table');
+                        }
+                        
+                        // Last resort - any crudTable in the document
+                        if (!closestTable) {
+                            closestTable = document.querySelector('table[id^="crudTable"]');
+                        }
                     }
                     
                     // Get the table ID if found, otherwise use the default 'crudTable'
-                    let tableId = closestTable ? closestTable.id : 'crudTable';
+                    let tableId = 'crudTable'; // Default fallback
+                    
+                    if (closestTable) {
+                        // Try to get the ID attribute first
+                        tableId = closestTable.getAttribute('id') || '';
+                        
+                        // If no ID found, try to get it from the DataTable instance
+                        if (!tableId && $.fn.DataTable.isDataTable(closestTable)) {
+                            try {
+                                const dt = $(closestTable).DataTable();
+                                if (dt && dt.table && dt.table().node && dt.table().node().id) {
+                                    tableId = dt.table().node().id;
+                                }
+                            } catch (e) {
+                                // Silently continue if error getting ID from DataTable
+                            }
+                        }
+                        
+                        // If still no ID, check the navbar's data-component-id
+                        if (!tableId) {
+                            tableId = navbar.getAttribute('data-component-id') || '';
+                        }
+                        
+                        // Last resort - use default
+                        if (!tableId) {
+                            tableId = 'crudTable';
+                        }
+                    }
                     
                     document.dispatchEvent(new CustomEvent('backpack:filters:cleared', {
                         detail: {

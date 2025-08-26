@@ -783,21 +783,49 @@ function setupTableEvents(tableId, config) {
 // Support for multiple tables with filters
 document.addEventListener('backpack:filters:cleared', function (event) {       
     // Get the table ID from the event detail or default to the current table ID
-    const tableId = event.detail && event.detail.tableId ? event.detail.tableId : 'crudTable';
+    let tableId = event.detail && event.detail.tableId ? event.detail.tableId : 'crudTable';
     
-    if (!window.crud.tableConfigs[tableId]) return;
+    // If the specific table config doesn't exist, try to find the first available table
+    if (!window.crud.tableConfigs[tableId]) {
+        // Get the first available table config
+        const availableTableIds = Object.keys(window.crud.tableConfigs);
+        
+        if (availableTableIds.length > 0) {
+            tableId = availableTableIds[0];
+        } else {
+            return;
+        }
+    }
     
     const config = window.crud.tableConfigs[tableId];
     
-    // behaviour for ajax table
-    var new_url = `${config.urlStart}/search`;
+    // Get the table instance first
     var ajax_table = window.crud.tables[tableId];
+    if (!ajax_table) {
+        // Try to get the first available table if the specific one doesn't exist
+        const availableTableIds = Object.keys(window.crud.tables);
+        if (availableTableIds.length > 0) {
+            tableId = availableTableIds[0];
+            ajax_table = window.crud.tables[tableId];
+        } else {
+            return;
+        }
+    }
+    
+    // behaviour for ajax table - get the current URL and remove query parameters
+    let currentAjaxUrl = ajax_table.ajax.url();
+    
+    // Parse the URL and remove all query parameters except essential ones
+    let urlObj = new URL(currentAjaxUrl);
+    let new_url = urlObj.origin + urlObj.pathname;
 
     // replace the datatables ajax url with new_url and reload it
     ajax_table.ajax.url(new_url).load();
 
     // remove filters from URL
-    config.updateUrl(new_url);       
+    if (config.modifiesUrl) {
+        config.updateUrl(new_url);       
+    }
 });
 
 document.addEventListener('backpack:filter:changed', function (event) {
