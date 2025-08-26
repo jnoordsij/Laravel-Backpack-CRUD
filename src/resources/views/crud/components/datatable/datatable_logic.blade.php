@@ -194,8 +194,8 @@ window.crud.initializeTable = function(tableId, customConfig = {}) {
     config.hasDetailsRow = tableElement.getAttribute('data-has-details-row') === 'true' || tableElement.getAttribute('data-has-details-row') === '1';
     config.hasBulkActions = tableElement.getAttribute('data-has-bulk-actions') === 'true' || tableElement.getAttribute('data-has-bulk-actions') === '1';
     config.hasLineButtonsAsDropdown = tableElement.getAttribute('data-has-line-buttons-as-dropdown') === 'true' || tableElement.getAttribute('data-has-line-buttons-as-dropdown') === '1';
-    config.lineButtonsAsDropdownMinimum = parseInt(tableElement.getAttribute('data-line-buttons-as-dropdown-minimum')) || 3;
-    config.lineButtonsAsDropdownShowBeforeDropdown = parseInt(tableElement.getAttribute('data-line-buttons-as-dropdown-show-before-dropdown')) || 1;
+    config.lineButtonsAsDropdownMinimum = parseInt(tableElement.getAttribute('data-line-buttons-as-dropdown-minimum')) ?? 3;
+    config.lineButtonsAsDropdownShowBeforeDropdown = parseInt(tableElement.getAttribute('data-line-buttons-as-dropdown-show-before-dropdown')) ?? 1;
     config.responsiveTable = tableElement.getAttribute('data-responsive-table') === 'true' || tableElement.getAttribute('data-responsive-table') === '1';
     config.exportButtons = tableElement.getAttribute('data-has-export-buttons') === 'true';
     // Apply any custom config
@@ -887,8 +887,10 @@ function formatActionColumnAsDropdown(tableId) {
     if (!table) return;
     
     // Get configuration
-    const minimumButtonsToBuildDropdown = parseInt(table.getAttribute('data-line-buttons-as-dropdown-minimum')) || 3;
-    const buttonsToShowBeforeDropdown = parseInt(table.getAttribute('data-line-buttons-as-dropdown-show-before-dropdown')) || 1;
+    const minAttr = table.getAttribute('data-line-buttons-as-dropdown-minimum');
+    const showBeforeAttr = table.getAttribute('data-line-buttons-as-dropdown-show-before-dropdown');
+    const minimumButtonsToBuildDropdown = minAttr !== null ? parseInt(minAttr) : 3;
+    const buttonsToShowBeforeDropdown = showBeforeAttr !== null ? parseInt(showBeforeAttr) : 1;
     
     // Get action column
     const actionColumnIndex = $('#' + tableId).find('th[data-action-column=true]').index();
