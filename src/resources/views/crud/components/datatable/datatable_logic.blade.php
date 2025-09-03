@@ -939,11 +939,8 @@ function initDatatableDropdowns(tableId) {
         }
         
         $(document).ready(function() {            
-            // Find all dropdown toggles
-            const dropdownToggles = $('#' + tableId + ' .dropdown-toggle');
-            
-            // Completely override dropdown behavior
-            $('#' + tableId).on('click', '.dropdown-toggle', function(e) {
+            // Use event delegation for dynamically created elements
+            $('#' + tableId).off('click.lineActions').on('click.lineActions', '.actions-buttons-column.dropdown-toggle', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -982,8 +979,7 @@ function initDatatableDropdowns(tableId) {
                     }
                 }
                 
-                // Close all other dropdowns
-                $('.dropdown-menu').removeClass('show').hide();
+                $('#' + tableId + ' .actions-buttons-column').next('.dropdown').find('.dropdown-menu').removeClass('show').hide();
                 
                 // Show this dropdown
                 $menu.addClass('show').show();
@@ -1021,10 +1017,12 @@ function initDatatableDropdowns(tableId) {
                 }                
             });
             
-            // Close on outside click
-            $(document).on('click', function(e) {
-                if (!$(e.target).closest('.dropdown').length) {
-                    $('.dropdown-menu').removeClass('show').hide();
+            // Close on outside click, but only for line action dropdowns in this table
+            $(document).off('click.lineActions' + tableId).on('click.lineActions' + tableId, function(e) {
+                // Only close line action dropdowns, not export button dropdowns
+                if (!$(e.target).closest('#' + tableId + ' .actions-buttons-column').length && 
+                    !$(e.target).closest('#' + tableId + ' .actions-buttons-column').next('.dropdown').length) {
+                    $('#' + tableId + ' .actions-buttons-column').next('.dropdown').find('.dropdown-menu').removeClass('show').hide();
                 }
             });
         });
