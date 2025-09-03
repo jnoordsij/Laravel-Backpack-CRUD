@@ -929,9 +929,7 @@ function formatActionColumnAsDropdown(tableId) {
     });
 }
 
-/**
- * ULTIMATE DROPDOWN FIX - Direct DOM manipulation with debug logging
- */
+
 function initDatatableDropdowns(tableId) {    
     // Wait for table to be ready
     setTimeout(function() {        
