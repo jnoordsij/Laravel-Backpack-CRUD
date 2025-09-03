@@ -107,6 +107,27 @@ div[id$="_wrapper"] .dt-processing {
     z-index: 1000 !important;
     inset: unset !important;
 }
+
+/* 
+ * ULTIMATE DROPDOWN FIX - Override everything
+ */
+
+/* Force all table containers to be visible */
+.table-responsive,
+.dataTables_wrapper,
+.card,
+.card-body,
+.container,
+.container-fluid {
+    overflow: visible !important;
+}
+
+/* Force dropdown positioning */
+.dataTables_wrapper .dropdown-menu {
+    position: fixed !important;
+    z-index: 999999 !important;
+}
+
 .navbar-filters {
     min-height: 25px;
     border-radius: 0;
