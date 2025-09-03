@@ -580,6 +580,13 @@ function setupTableUI(tableId, config) {
         }
     });
     window.dispatchEvent(event);
+    
+    // Initialize dropdown positioning fix if table has dropdown buttons
+    if ($(`#${tableId}`).data('has-line-buttons-as-dropdown')) {
+        setTimeout(() => {
+            initDatatableDropdowns(tableId);
+        }, 100);
+    }
 }
 
 // Function to set up table event handlers
@@ -668,10 +675,6 @@ function setupTableEvents(tableId, config) {
         
         if ($(`#${tableId}`).data('has-line-buttons-as-dropdown')) {
             formatActionColumnAsDropdown(tableId);
-            // Initialize dropdown positioning fix and Bootstrap dropdowns
-            setTimeout(() => {
-                initDatatableDropdownFix(tableId);
-            }, 100);
         }
 
         if (table.responsive && !table.responsive.hasHidden()) {
@@ -929,7 +932,7 @@ function formatActionColumnAsDropdown(tableId) {
 /**
  * ULTIMATE DROPDOWN FIX - Direct DOM manipulation with debug logging
  */
-function initDatatableDropdownFix(tableId) {    
+function initDatatableDropdowns(tableId) {    
     // Wait for table to be ready
     setTimeout(function() {        
         const table = document.getElementById(tableId);
