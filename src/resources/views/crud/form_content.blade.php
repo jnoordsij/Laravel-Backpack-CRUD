@@ -1,5 +1,5 @@
-<input type="hidden" name="_http_referrer" value={{ session('referrer_url_override') ?? old('_http_referrer') ?? \URL::previous() ?? url($crud->route) }}>
-<input type="hidden" name="_form_id" value="{{ $id ?? 'crudForm' }}">
+<input type="hidden" name="_http_referrer" value="{{ session('referrer_url_override') ?? old('_http_referrer') ?? \URL::previous() ?? url($crud->route) }}">
+<input type="hidden" name="_form_id" value="{{ $formId ?? 'crudForm' }}">
 
 {{-- See if we're using tabs --}}
 @if ($crud->tabsEnabled() && count($crud->getTabs()))
@@ -33,75 +33,13 @@
     @stack('crud_fields_scripts')
 
     <script>
-    function initializeFieldsWithJavascript(container) {
-      var selector;
-      if (container instanceof jQuery) {
-        selector = container;
-      } else {
-        selector = $(container);
-      }
-      selector.find("[data-init-function]").not("[data-initialized=true]").each(function () {
-        var element = $(this);
-        var functionName = element.data('init-function');
-
-        if (typeof window[functionName] === "function") {
-          window[functionName](element);
-
-          // mark the element as initialized, so that its function is never called again
-          element.attr('data-initialized', 'true');
-        }
-      });
-    }
-
-    /**
-     * Auto-discover first focusable input
-     * @param {jQuery} form
-     * @return {jQuery}
-     */
-    function getFirstFocusableField(form) {
-        return form.find('input, select, textarea, button')
-            .not('.close')
-            .not('[disabled]')
-            .filter(':visible:first');
-    }
-
-    /**
-     *
-     * @param {jQuery} firstField
-     */
-    function triggerFocusOnFirstInputField(firstField) {
-        if (firstField.hasClass('select2-hidden-accessible')) {
-            return handleFocusOnSelect2Field(firstField);
-        }
-
-        firstField.trigger('focus');
-    }
-
-    /**
-     * 1- Make sure no other select2 input is open in other field to focus on the right one
-     * 2- Check until select2 is initialized
-     * 3- Open select2
-     *
-     * @param {jQuery} firstField
-     */
-    function handleFocusOnSelect2Field(firstField){
-        firstField.select2('focus');
-    }
-
-    /*
-    * Hacky fix for a bug in select2 with jQuery 3.6.0's new nested-focus "protection"
-    * see: https://github.com/select2/select2/issues/5993
-    * see: https://github.com/jquery/jquery/issues/4382
-    *
-    */
-    $(document).on('select2:open', () => {
-        setTimeout(() => document.querySelector('.select2-container--open .select2-search__field').focus(), 100);
-    });
+    @include('crud::components.dataform.common_js')
 
     jQuery('document').ready(function($){
 
-      // trigger the javascript for all fields that have their js defined in a separate method
-      initializeFieldsWithJavascript('form');
+      @if(! isset($initFields) || $initFields !== false)
+        initializeFieldsWithJavascript('form');
+      @endif
 
       // Retrieves the current form data
       function getFormData() {
@@ -207,22 +145,33 @@
           @endphp
             focusFieldTab = '{{ Str::slug($focusFieldTab) }}';
 
-            // if focus is not 'null' navigate to that tab before focusing.
-            if(focusFieldTab !== 'null'){
-              $('#form_tabs a[tab_name="'+focusFieldTab+'"]').tab('show');
-            }
+                // if focus is not 'null' navigate to that tab before focusing.
+                if(focusFieldTab !== 'null'){
+                  try {
+                    // find the form id stored in the hidden input within this form instance
+                    const currentFormEl = focusField.closest('form');
+                    const formIdInput = currentFormEl ? currentFormEl.querySelector('input[name="_form_id"]') : null;
+                    const theFormId = formIdInput ? formIdInput.value : ('{{ $id ?? 'crudForm' }}');
+                    const selector = `#form_tabs[data-form-id="${theFormId}"] a[tab_name="${focusFieldTab}"]`;
+                    $(selector).tab('show');
+                  } catch (e) {
+                    // fallback to global selector
+                    $('#form_tabs a[tab_name="'+focusFieldTab+'"]').tab('show');
+                  }
+                }
             focusField = $('[name="{{ $focusFieldName }}"]').eq(0);
         @else
             focusField = getFirstFocusableField($('form'));
         @endif
+        if(focusField.length !== 0) {
+          const fieldOffset = focusField.offset().top;
+          const scrollTolerance = $(window).height() / 2;
 
-        const fieldOffset = focusField.offset().top;
-        const scrollTolerance = $(window).height() / 2;
+          triggerFocusOnFirstInputField(focusField);
 
-        triggerFocusOnFirstInputField(focusField);
-
-        if( fieldOffset > scrollTolerance ){
-            $('html, body').animate({scrollTop: (fieldOffset - 30)});
+          if( fieldOffset > scrollTolerance ){
+              $('html, body').animate({scrollTop: (fieldOffset - 30)});
+          }
         }
       @endif
 
@@ -256,6 +205,7 @@
                 @if ($crud->tabsEnabled())
                 var tab_container = $(container).closest('[role="tabpanel"]');
                 if (tab_container.length) {
+                  // ensure tab id includes form id suffix if present
                   firstErrorTab = tab_container.attr('id');
                 }
                 @endif
@@ -287,8 +237,12 @@
 
                   // highlight its parent tab
                   @if ($crud->tabsEnabled())
-                  var tab_id = $(container).closest('[role="tabpanel"]').attr('id');
-                  $("#form_tabs [aria-controls="+tab_id+"]").addClass('text-danger');
+          var tab_id = $(container).closest('[role="tabpanel"]').attr('id');
+          try {
+            $('#form_tabs[data-form-id="' + (typeof currentFormId !== 'undefined' ? currentFormId : '{{ $id }}') + '"] [aria-controls="'+tab_id+'"]').addClass('text-danger');
+          } catch (e) {
+            $("#form_tabs [aria-controls="+tab_id+"]").addClass('text-danger');
+          }
                   @endif
               });
             });
@@ -299,7 +253,12 @@
             @if ($crud->tabsEnabled())
             // Switch to the tab containing the first error if needed
             if (firstErrorTab) {
-              $('.nav a[href="#' + firstErrorTab + '"]').tab('show');
+              try {
+                  var selector = '#form_tabs[data-form-id="' + (typeof currentFormId !== 'undefined' ? currentFormId : '{{ $id }}') + '"] .nav a[href="#' + firstErrorTab + '"]';
+                  $(selector).tab('show');
+              } catch (e) {
+                  $('.nav a[href="#' + firstErrorTab + '"]').tab('show');
+              }
             }
             @endif
             

@@ -37,6 +37,7 @@ trait CreateOperation
         $this->crud->allowAccess('create');
 
         LifecycleHook::hookInto('create:before_setup', function () {
+            $this->crud->loadDefaultOperationSettingsFromConfig();
             $this->crud->setupDefaultSaveActions();
         });
 

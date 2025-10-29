@@ -21,65 +21,65 @@ class Dataform extends Component
      */
     public function __construct(
         public string $controller,
-        private string $id = 'backpack-form-',
-        public string $name = '',
-        public string $operation = 'create',
-        public ?string $action = null,
-        public string $method = 'post',
+        private string $formId = 'backpack-form-',
+        public string $formOperation = 'create',
+        public ?string $formUrl = null,
+        public ?string $formAction = null,
+        public ?string $formMethod = 'post',
         public bool $hasUploadFields = false,
         public $entry = null,
         public ?Closure $setup = null,
         public bool $focusOnFirstField = false,
-
     ) {
         // Get CRUD panel instance from the controller
         CrudManager::setActiveController($controller);
 
-        $this->crud = CrudManager::setupCrudPanel($controller, $operation);
+        $this->crud = CrudManager::setupCrudPanel($controller, $this->formOperation);
+
+        if ($this->crud->getOperation() !== $this->formOperation) {
+            $this->crud->setOperation($this->formOperation);
+        }
 
         $this->crud->setAutoFocusOnFirstField($this->focusOnFirstField);
 
-        if ($this->entry && $this->operation === 'update') {
-            $this->action = $action ?? url($this->crud->route.'/'.$this->entry->getKey());
-            $this->method = 'put';
+        if ($this->entry && $this->formOperation === 'update') {
+            $this->formAction = $formAction ?? url($this->crud->route.'/'.$this->entry->getKey());
+            $this->formMethod = 'put';
             $this->crud->entry = $this->entry;
             $this->crud->setOperationSetting('fields', $this->crud->getUpdateFields());
+            $this->formUrl = url($this->crud->route.'/'.$this->entry->getKey().'/edit');
         } else {
-            $this->action = $action ?? url($this->crud->route);
+            $this->formAction = $formAction ?? url($this->crud->route);
+            $this->formUrl = url($this->crud->route.'/create');
         }
-        $this->hasUploadFields = $this->crud->hasUploadFields($operation, $this->entry?->getKey());
-        $this->id = $id.md5($this->action.$this->operation.$this->method.$this->controller);
+
+        $this->hasUploadFields = $this->crud->hasUploadFields($this->formOperation, $this->entry?->getKey());
+        $this->formId = $formId.md5($this->formAction.$this->formOperation.$this->formMethod.$this->controller);
 
         if ($this->setup) {
-            $this->applySetupClosure();
+            $parentEntry = $this->getParentCrudEntry();
+            call_user_func($this->setup, $this->crud, $parentEntry);
         }
 
+        // Reset the active controller
         CrudManager::unsetActiveController();
     }
 
-    public function applySetupClosure(): bool
+    private function getParentCrudEntry()
     {
-        $originalSetup = $this->setup;
-        $controllerClass = $this->controller;
-        $crud = $this->crud;
-        $entry = $this->entry;
+        $cruds = CrudManager::getCrudPanels();
+        $parentCrud = reset($cruds);
 
-        $modifiedSetup = function ($crud, $entry) use ($originalSetup, $controllerClass) {
-            CrudManager::setActiveController($controllerClass);
+        if ($parentCrud && $parentCrud->getCurrentEntry()) {
+            CrudManager::storeInitializedOperation(
+                $parentCrud->controller,
+                $parentCrud->getCurrentOperation()
+            );
 
-            // Run the original closure
-            return ($originalSetup)($crud, $entry);
-        };
-
-        try {
-            // Execute the modified closure
-            ($modifiedSetup)($crud, $entry);
-
-            return true;
-        } finally {
-            // Clean up
-            CrudManager::unsetActiveController();
+            return $parentCrud->getCurrentEntry();
         }
+
+        return null;
     }
 
     /**
@@ -90,16 +90,15 @@ class Dataform extends Component
     public function render()
     {
         // Store the current form ID in the service container for form-aware old() helper
-        app()->instance('backpack.current_form_id', $this->id);
+        app()->instance('backpack.current_form_id', $this->formId);
 
         return view('crud::components.dataform.form', [
             'crud' => $this->crud,
             'saveAction' => $this->crud->getSaveAction(),
-            'id' => $this->id,
-            'name' => $this->name,
-            'operation' => $this->operation,
-            'action' => $this->action,
-            'method' => $this->method,
+            'formId' => $this->formId,
+            'formOperation' => $this->formOperation,
+            'formAction' => $this->formAction,
+            'formMethod' => $this->formMethod,
             'hasUploadFields' => $this->hasUploadFields,
             'entry' => $this->entry,
         ]);
