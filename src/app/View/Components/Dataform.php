@@ -30,6 +30,7 @@ class Dataform extends Component
         public $entry = null,
         public ?Closure $setup = null,
         public bool $focusOnFirstField = false,
+        public bool $formInsideCard = false,
     ) {
         // Get CRUD panel instance from the controller
         CrudManager::setActiveController($controller);
@@ -101,6 +102,7 @@ class Dataform extends Component
             'formMethod' => $this->formMethod,
             'hasUploadFields' => $this->hasUploadFields,
             'entry' => $this->entry,
+            'formInsideCard' => $this->formInsideCard,
         ]);
     }
 }

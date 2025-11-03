@@ -6,13 +6,21 @@
     @include('crud::inc.show_tabbed_fields')
     <input type="hidden" name="_current_tab" value="{{ Str::slug($crud->getTabs()[0]) }}" />
 @else
-  <div class="card">
-    <div class="card-body row">
+  <div class="{{isset($formInsideCard) && $formInsideCard ? '' : 'card'}}">
+    <div class="{{isset($formInsideCard) && $formInsideCard ? '' : 'card-body'}} row">
       @include('crud::inc.show_fields', ['fields' => $crud->fields()])
     </div>
   </div>
 @endif
 
+@foreach (app('widgets')->toArray() as $currentWidget)
+@php
+    $currentWidget = \Backpack\CRUD\app\Library\Widget::add($currentWidget);
+@endphp
+    @if($currentWidget->getAttribute('inline'))
+        @include($currentWidget->getFinalViewPath(), ['widget' => $currentWidget->toArray()])
+    @endif
+@endforeach
 
 {{-- Define blade stacks so css and js can be pushed from the fields to these sections. --}}
 
@@ -151,7 +159,7 @@
                     // find the form id stored in the hidden input within this form instance
                     const currentFormEl = focusField.closest('form');
                     const formIdInput = currentFormEl ? currentFormEl.querySelector('input[name="_form_id"]') : null;
-                    const theFormId = formIdInput ? formIdInput.value : ('{{ $id ?? 'crudForm' }}');
+                    const theFormId = formIdInput ? formIdInput.value : ('{{ $formId ?? 'crudForm' }}');
                     const selector = `#form_tabs[data-form-id="${theFormId}"] a[tab_name="${focusFieldTab}"]`;
                     $(selector).tab('show');
                   } catch (e) {
@@ -180,7 +188,7 @@
 
         window.errors = {!! json_encode(session()->get('errors')->getBags()) !!};
         var submittedFormId = "{{ old('_form_id') }}";
-        var currentFormId = '{{ $id }}';
+        var currentFormId = '{{ $formId }}';
 
         // Only display errors if this is the form that was submitted
         if (submittedFormId && submittedFormId === currentFormId) {
@@ -205,7 +213,6 @@
                 @if ($crud->tabsEnabled())
                 var tab_container = $(container).closest('[role="tabpanel"]');
                 if (tab_container.length) {
-                  // ensure tab id includes form id suffix if present
                   firstErrorTab = tab_container.attr('id');
                 }
                 @endif
@@ -237,29 +244,29 @@
 
                   // highlight its parent tab
                   @if ($crud->tabsEnabled())
-          var tab_id = $(container).closest('[role="tabpanel"]').attr('id');
-          try {
-            $('#form_tabs[data-form-id="' + (typeof currentFormId !== 'undefined' ? currentFormId : '{{ $id }}') + '"] [aria-controls="'+tab_id+'"]').addClass('text-danger');
-          } catch (e) {
-            $("#form_tabs [aria-controls="+tab_id+"]").addClass('text-danger');
-          }
-                  @endif
-              });
-            });
-          });
+                    var tab_id = $(container).closest('[role="tabpanel"]').attr('id');
+                    try {
+                      $('#form_tabs[data-form-id="' + (typeof currentFormId !== 'undefined' ? currentFormId : '{{ $formId }}') + '"] [aria-controls="'+tab_id+'"]').addClass('text-danger');
+                    } catch (e) {
+                      $("#form_tabs [aria-controls="+tab_id+"]").addClass('text-danger');
+                    }
+                            @endif
+                        });
+                      });
+                    });
 
-          // Focus on the first error field
-          if (firstErrorField !== null) {
-            @if ($crud->tabsEnabled())
-            // Switch to the tab containing the first error if needed
-            if (firstErrorTab) {
-              try {
-                  var selector = '#form_tabs[data-form-id="' + (typeof currentFormId !== 'undefined' ? currentFormId : '{{ $id }}') + '"] .nav a[href="#' + firstErrorTab + '"]';
-                  $(selector).tab('show');
-              } catch (e) {
-                  $('.nav a[href="#' + firstErrorTab + '"]').tab('show');
-              }
-            }
+                    // Focus on the first error field
+                    if (firstErrorField !== null) {
+                      @if ($crud->tabsEnabled())
+                      // Switch to the tab containing the first error if needed
+                      if (firstErrorTab) {
+                        try {
+                            var selector = '#form_tabs[data-form-id="' + (typeof currentFormId !== 'undefined' ? currentFormId : '{{ $formId }}') + '"] .nav a[href="#' + firstErrorTab + '"]';
+                            $(selector).tab('show');
+                        } catch (e) {
+                            $('.nav a[href="#' + firstErrorTab + '"]').tab('show');
+                        }
+                      }
             @endif
             
             // Focus on the first error field
