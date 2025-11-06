@@ -1,6 +1,7 @@
 @php
-    // Define the table ID - use the provided tableId or default to 'crudTable'
-    $tableId = $tableId ?? 'crudTable';
+  // Define the table ID - use the provided tableId or default to 'crudTable'
+  $tableId = $tableId ?? 'crudTable';
+  $fixedHeader = $useFixedHeader ?? $crud->getOperationSetting('useFixedHeader') ?? true;
 @endphp
 <section class="header-operation datatable-header animated fadeIn d-flex mb-2 align-items-baseline d-print-none" bp-section="page-header">
           <h1 class="text-capitalize mb-0" bp-section="page-heading">{!! $crud->getHeading() ?? $crud->entity_name_plural !!}</h1>
@@ -36,6 +37,7 @@
   <table
       id="{{ $tableId }}"
       class="{{ backpack_theme_config('classes.table') ?? 'table table-striped table-hover nowrap rounded card-table table-vcenter card d-table shadow-xs border-xs' }} crud-table"
+      data-use-fixed-header="{{ $fixedHeader ? 'true' : 'false' }}"
       data-responsive-table="{{ (int) $crud->getOperationSetting('responsiveTable') }}"
       data-has-details-row="{{ (int) $crud->getOperationSetting('detailsRow') }}"
       data-has-bulk-actions="{{ (int) $crud->getOperationSetting('bulkActions') }}"

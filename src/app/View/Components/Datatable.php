@@ -21,6 +21,7 @@ class Datatable extends Component
         private bool $modifiesUrl = false,
         private ?\Closure $setup = null,
         private ?string $name = null,
+        private ?bool $useFixedHeader = null,
     ) {
         // Set active controller for proper context
         CrudManager::setActiveController($controller);
@@ -85,11 +86,14 @@ class Datatable extends Component
 
     public function render()
     {
+        $useFixedHeader = $this->useFixedHeader ?? $this->crud->getOperationSetting('useFixedHeader') ?? true;
+
         return view('crud::components.datatable.datatable', [
             'crud' => $this->crud,
             'modifiesUrl' => $this->modifiesUrl,
             'tableId' => $this->tableId,
             'datatablesUrl' => url($this->crud->get('list.datatablesUrl')),
+            'useFixedHeader' => $useFixedHeader,
         ]);
     }
 }

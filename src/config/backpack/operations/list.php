@@ -25,11 +25,13 @@ return [
     // how much time should the system wait before triggering the search function after the user stops typing?
     'searchDelay' => 400,
 
+    // should we use a fixed header for the datatables?
+    'useFixedHeader' => true,
+
     // the time the table will be persisted in minutes
     // after this the table info is cleared from localStorage.
     // use false to never force localStorage clear. (default)
     // keep in mind: User can clear their localStorage whenever they want.
-
     'persistentTableDuration' => false,
 
     // How many items should be shown by default by the Datatable?

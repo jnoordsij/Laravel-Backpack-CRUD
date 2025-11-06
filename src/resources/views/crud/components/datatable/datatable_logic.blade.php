@@ -19,6 +19,32 @@ $backpack_alerts = \Alert::getMessages();
 @endpush
 
 <script>
+/* eslint-disable */
+    (function($) {
+        if (!$ || !$.fn || !$.fn.dataTable || !$.fn.dataTable.FixedHeader) {
+            return;
+        }
+
+        const proto = $.fn.dataTable.FixedHeader.prototype;
+        if (!proto || proto._backpackNoBelowPatchApplied) {
+            return;
+        }
+
+        const originalModeChange = proto._modeChange;
+        proto._modeChange = function(mode, type) {
+            const args = Array.prototype.slice.call(arguments);
+            if (type === 'header' && args[0] === 'below' && this && this.c && this.c.headerOffset > 0) {
+                args[0] = 'in-place';
+            }
+
+            const result = originalModeChange.apply(this, args);
+
+            return result;
+        };
+
+        proto._backpackNoBelowPatchApplied = true;
+    })(window.jQuery);
+
 // Store the alerts in localStorage for this page
 let $oldAlerts = JSON.parse(localStorage.getItem('backpack_alerts'))
     ? JSON.parse(localStorage.getItem('backpack_alerts')) : {};
@@ -198,6 +224,12 @@ window.crud.initializeTable = function(tableId, customConfig = {}) {
     config.lineButtonsAsDropdownMinimum = parseInt(tableElement.getAttribute('data-line-buttons-as-dropdown-minimum')) ?? 3;
     config.lineButtonsAsDropdownShowBeforeDropdown = parseInt(tableElement.getAttribute('data-line-buttons-as-dropdown-show-before-dropdown')) ?? 1;
     config.responsiveTable = tableElement.getAttribute('data-responsive-table') === 'true' || tableElement.getAttribute('data-responsive-table') === '1';
+    const useFixedHeaderAttr = tableElement.getAttribute('data-use-fixed-header');
+    if (useFixedHeaderAttr === null || useFixedHeaderAttr === '') {
+        config.useFixedHeader = config.responsiveTable;
+    } else {
+        config.useFixedHeader = useFixedHeaderAttr.toLowerCase() === 'true';
+    }
     config.exportButtons = tableElement.getAttribute('data-has-export-buttons') === 'true';
     // Apply any custom config
     if (customConfig && Object.keys(customConfig).length > 0) {
@@ -261,10 +293,14 @@ window.crud.initializeTable = function(tableId, customConfig = {}) {
     }
     
     // Create DataTable configuration
+    const initialFixedHeaderOffset = calculateStickyHeaderOffset(tableElement);
     const dataTableConfig = {
         bInfo: config.showEntryCount,
         responsive: config.responsiveTable,
-        fixedHeader: config.responsiveTable,
+        fixedHeader: config.useFixedHeader ? {
+            header: true,
+            headerOffset: initialFixedHeaderOffset
+        } : false,
         scrollX: !config.responsiveTable,
         autoWidth: false,
         processing: true,
@@ -877,6 +913,242 @@ function setupTableEvents(tableId, config) {
             resizeCrudTableColumnWidths();
         });
     }
+
+    registerFixedHeaderListeners(tableId, config);
+}
+
+function resolveFixedHeaderOffset(fixedHeader, explicitOffset) {
+    if (typeof explicitOffset === 'number') {
+        return explicitOffset;
+    }
+
+    if (!fixedHeader) {
+        return 0;
+    }
+
+    if (typeof fixedHeader.headerOffset === 'function') {
+        const value = fixedHeader.headerOffset();
+        if (typeof value === 'number') {
+            return value;
+        }
+    }
+
+    if (fixedHeader.c && typeof fixedHeader.c.headerOffset === 'number') {
+        return fixedHeader.c.headerOffset;
+    }
+
+    return 0;
+}
+
+function measureFixedHeaderHeight(fixedHeader, headerElement) {
+    const storedHeight = fixedHeader && fixedHeader.s && typeof fixedHeader.s.headerHeight === 'number'
+        ? Math.max(0, Math.round(fixedHeader.s.headerHeight))
+        : 0;
+
+    if (storedHeight > 0) {
+        return storedHeight;
+    }
+
+    if (headerElement) {
+        const rectHeight = Math.max(0, Math.round(headerElement.getBoundingClientRect().height));
+        if (rectHeight > 0) {
+            return rectHeight;
+        }
+
+        const offsetHeight = Math.max(0, Math.round(headerElement.offsetHeight || 0));
+        if (offsetHeight > 0) {
+            return offsetHeight;
+        }
+    }
+
+    return 56;
+}
+
+function deriveFixedHeaderMargins(headerHeight) {
+    const enableMargin = Math.max(10, headerHeight ? Math.round(Math.max(14, headerHeight * 0.35)) : 28);
+    const disableMargin = Math.max(enableMargin + 14, headerHeight ? Math.round(Math.max(24, headerHeight * 0.6)) : 44);
+    return { enableMargin, disableMargin };
+}
+
+function registerFixedHeaderListeners(tableId, config) {
+    if (!config.useFixedHeader || config.fixedHeaderListenersRegistered) {
+        return;
+    }
+
+    const tableElement = document.getElementById(tableId);
+    const apiInstance = window.crud.tables[tableId];
+    const fixedHeader = apiInstance && apiInstance.fixedHeader;
+
+    if (!tableElement || !fixedHeader || typeof fixedHeader.headerOffset !== 'function' || typeof fixedHeader.enabled !== 'function') {
+        return;
+    }
+
+    const headerElement = tableElement.querySelector('thead');
+    const state = {
+        timer: null,
+        lastOffset: null,
+        lastEnabled: null,
+        listeners: []
+    };
+
+    const ensureActivation = (explicitOffset) => {
+        const offsetValue = resolveFixedHeaderOffset(fixedHeader, explicitOffset);
+        const rect = tableElement.getBoundingClientRect();
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        const currentlyEnabled = fixedHeader.enabled();
+        const headerHeight = measureFixedHeaderHeight(fixedHeader, headerElement);
+        const { enableMargin, disableMargin } = deriveFixedHeaderMargins(headerHeight);
+
+        const withinViewport = rect.top < viewportHeight - 1 && rect.bottom > offsetValue + 1;
+        if (!withinViewport) {
+            if (currentlyEnabled) {
+                fixedHeader.disable();
+            }
+            return false;
+        }
+
+        const headerBottom = rect.top + headerHeight;
+        const clearanceThreshold = currentlyEnabled ? offsetValue + disableMargin : offsetValue - enableMargin;
+        const shouldEnable = headerBottom <= clearanceThreshold;
+
+        if (shouldEnable === currentlyEnabled) {
+            return shouldEnable;
+        }
+
+        if (shouldEnable) {
+            fixedHeader.enable(true);
+        } else {
+            fixedHeader.disable();
+        }
+
+        return shouldEnable;
+    };
+
+    const recalculate = (reason) => {
+        const offset = calculateStickyHeaderOffset(tableElement);
+        const enabled = ensureActivation(offset);
+        const offsetChanged = typeof state.lastOffset !== 'number' || state.lastOffset !== offset;
+        const enabledChanged = typeof state.lastEnabled !== 'boolean' || state.lastEnabled !== enabled;
+
+        if (offsetChanged) {
+            fixedHeader.headerOffset(offset);
+        }
+
+        if (enabled && (offsetChanged || enabledChanged || /(?:dt:|window:resize|orientationchange)/.test(reason || ''))) {
+            if (typeof fixedHeader.adjust === 'function') {
+                fixedHeader.adjust();
+            }
+        }
+
+        state.lastOffset = offset;
+        state.lastEnabled = enabled;
+    };
+
+    const scheduleRecalculation = (reason) => {
+        if (state.timer) {
+            return;
+        }
+
+        state.timer = setTimeout(() => {
+            state.timer = null;
+            recalculate(reason || 'timer');
+        }, 75);
+    };
+
+    const addListener = (target, eventName, handler) => {
+        if (!target || !target.addEventListener) {
+            return;
+        }
+        target.addEventListener(eventName, handler, false);
+        state.listeners.push(() => target.removeEventListener(eventName, handler, false));
+    };
+
+    recalculate('initial');
+    setTimeout(() => recalculate('delayed-initial'), 150);
+
+    addListener(window, 'resize', () => scheduleRecalculation('window:resize'));
+    addListener(window, 'orientationchange', () => scheduleRecalculation('window:orientationchange'));
+    addListener(window, 'scroll', () => scheduleRecalculation('window:scroll'));
+
+    const $table = $(`#${tableId}`);
+    $table.on('column-visibility.dt.fixedHeader length.dt.fixedHeader responsive-resize.fixedHeader draw.dt.fixedHeader', function(evt) {
+        const eventLabel = evt && evt.type ? 'dt:' + evt.type : 'dt:unknown';
+        scheduleRecalculation(eventLabel);
+    });
+
+    $table.on('destroy.dt.fixedHeader', function() {
+        if (state.timer) {
+            clearTimeout(state.timer);
+            state.timer = null;
+        }
+
+        state.listeners.forEach(function(cleanup) {
+            cleanup();
+        });
+        state.listeners.length = 0;
+
+        $table.off('.fixedHeader');
+        config.fixedHeaderListenersRegistered = false;
+    });
+
+    config.fixedHeaderListenersRegistered = true;
+}
+
+function calculateStickyHeaderOffset(tableElement) {
+    if (!tableElement || tableElement.closest('.modal')) {
+        return 0;
+    }
+
+    if (typeof document.elementsFromPoint !== 'function') {
+        return 0;
+    }
+
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+    const sampleX = Math.max(0, Math.round(viewportWidth / 2));
+    const maxScanDepth = Math.min(400, Math.max(200, (window.innerHeight || 0) / 2));
+    const seenElements = new Set();
+    let offset = 0;
+
+    for (let y = 0; y <= maxScanDepth; y += 8) {
+        const elements = document.elementsFromPoint(sampleX, y) || [];
+
+        elements.forEach((element) => {
+            if (!element || seenElements.has(element)) {
+                return;
+            }
+
+            seenElements.add(element);
+
+            if (element.closest('.dtfh-floatingparent')) {
+                return;
+            }
+
+            const computedStyle = window.getComputedStyle(element);
+            if (computedStyle.position !== 'sticky' && computedStyle.position !== 'fixed') {
+                return;
+            }
+
+            const rect = element.getBoundingClientRect();
+            if (rect.bottom <= 0) {
+                return;
+            }
+
+            const topValue = parseFloat(computedStyle.top) || 0;
+            if (topValue > y + 2) {
+                return;
+            }
+
+            offset = Math.max(offset, rect.bottom);
+        });
+
+        if (offset > 0 && y > offset) {
+            break;
+        }
+    }
+
+    const finalOffset = Math.max(0, Math.round(offset));
+
+    return finalOffset;
 }
 
 // Support for multiple tables with filters
